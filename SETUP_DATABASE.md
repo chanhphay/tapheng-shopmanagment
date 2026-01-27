@@ -1,0 +1,103 @@
+# วิธีสร้างตารางในฐานข้อมูล Supabase
+
+## ขั้นตอนที่ 1: เข้าสู่ Supabase Dashboard
+
+1. ไปที่ https://supabase.com
+2. เข้าสู่ระบบด้วยบัญชีของคุณ
+3. เลือก Project ของคุณ (xvbddynithakubbbkykk.supabase.co)
+
+## ขั้นตอนที่ 2: เปิด SQL Editor
+
+1. ที่เมนูด้านซ้าย คลิก **SQL Editor**
+2. คลิกปุ่ม **New query**
+
+## ขั้นตอนที่ 3: คัดลอกและรัน SQL
+
+คัดลอกโค้ด SQL ด้านล่างทั้งหมด และวางลงใน SQL Editor:
+
+```sql
+-- สร้าง extension สำหรับ uuid
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- 1. สร้างตารางสินค้าหลัก (บอดี้สูท, หมวก, ผ้ากันเปื้อน)
+CREATE TABLE products (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,                -- เช่น 'Body Suit แขนสั้น'
+    base_cost NUMERIC DEFAULT 0,       -- ต้นทุนตัวเปล่า
+    base_price NUMERIC DEFAULT 0,      -- ราคาขาย
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 2. สร้างตารางรุ่นย่อย/สี (สำหรับเช็กสต็อก)
+CREATE TABLE product_variants (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+    color TEXT NOT NULL,               -- เช่น 'ขาวขอบแดง', 'ฟ้า'
+    stock_qty INTEGER DEFAULT 0,       -- จำนวนในสต็อกปัจจุบัน
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- สร้าง index สำหรับประสิทธิภาพ
+CREATE INDEX idx_product_variants_product_id ON product_variants(product_id);
+
+-- สร้าง trigger สำหรับอัพเดท updated_at อัตโนมัติ
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_product_variants_updated_at
+    BEFORE UPDATE ON product_variants
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+```
+
+## ขั้นตอนที่ 4: กดปุ่ม Run
+
+1. กดปุ่ม **Run** (หรือกด Ctrl+Enter / Cmd+Enter)
+2. รอจนกว่าจะขึ้นข้อความ "Success. No rows returned"
+
+## ขั้นตอนที่ 5: ตรวจสอบตาราง
+
+1. ไปที่เมนู **Table Editor** ด้านซ้าย
+2. คุณควรเห็นตาราง 2 ตาราง:
+   - `products` - ตารางสินค้าหลัก
+   - `product_variants` - ตารางสี/รุ่นย่อย
+
+## ขั้นตอนที่ 6: ตั้งค่า Row Level Security (RLS) - ถ้าต้องการ
+
+ถ้าคุณต้องการให้ทุกคนเข้าถึงข้อมูลได้ (สำหรับ development):
+
+```sql
+-- ปิด RLS สำหรับ development (ไม่แนะนำสำหรับ production)
+ALTER TABLE products DISABLE ROW LEVEL SECURITY;
+ALTER TABLE product_variants DISABLE ROW LEVEL SECURITY;
+```
+
+หรือถ้าต้องการเปิด RLS และอนุญาตให้ทุกคนอ่าน/เขียนได้:
+
+```sql
+-- เปิด RLS
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE product_variants ENABLE ROW LEVEL SECURITY;
+
+-- สร้าง policy อนุญาตทุกคน
+CREATE POLICY "Allow all access to products" ON products
+    FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Allow all access to product_variants" ON product_variants
+    FOR ALL USING (true) WITH CHECK (true);
+```
+
+## เสร็จสิ้น! 🎉
+
+ตอนนี้คุณสามารถรันโปรเจคได้แล้ว:
+
+```bash
+npm run dev
+```
+
+เปิดเบราว์เซอร์ที่ http://localhost:3000 และเริ่มใช้งาน!
