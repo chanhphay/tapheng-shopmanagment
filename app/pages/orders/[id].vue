@@ -20,7 +20,20 @@
         <div v-else class="detail-container">
             <!-- ຂໍ້ມູນລູກຄ້າ -->
             <div class="order-info">
-                <h2>ຂໍ້ມູນອໍເດີ</h2>
+                <div class="order-info-top">
+                    <h2>ຂໍ້ມູນອໍເດີ</h2>
+                    <div class="order-status-actions">
+                        <div class="status-label">
+                            <span class="label">ສະຖານະ:</span>
+                            <span class="value status">{{ order.status }}</span>
+                        </div>
+                        <div class="status-buttons">
+                            <button v-if="order.status === 'ອອກແບບ'" class="btn-design-completed" @click="markDesignCompleted">Design completed</button>
+                            <button v-if="order.status === 'ສັ່ງພີມ'" class="btn-update-status" @click="markNotifyCustomer">Update to : ແຈ້ງລູກຄ້າ</button>
+                            <button v-if="order.status === 'ແຈ້ງລູກຄ້າ'" class="btn-update-status" @click="markDelivered">Update to: ຈັດສົ່ງແລ້ວ</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="info-grid">
                     <div class="info-item">
                         <span class="label">ວັນທີສັ່ງ:</span>
@@ -28,33 +41,30 @@
                     </div>
                     <div class="info-item">
                         <span class="label">ຊື່ລູກຄ້າ:</span>
-                        <span class="value">{{ order.customer_name }}</span>
+                        <span class="value" v-if="!isEditingDetail">{{ order.customer_name }}</span>
+                        <input v-else v-model="editForm.customer_name" type="text" class="input-inline" />
                     </div>
                     <div class="info-item">
                         <span class="label">ຊື່ລູກ:</span>
-                        <span class="value">{{ order.customer_clid || '-' }}</span>
+                        <span class="value" v-if="!isEditingDetail">{{ order.customer_clid || '-' }}</span>
+                        <input v-else v-model="editForm.customer_clid" type="text" class="input-inline" />
                     </div>
                     <div class="info-item">
                         <span class="label">ຈາກເພກ:</span>
-                        <span class="value">{{ order.frompage || '-' }}</span>
+                        <span class="value" v-if="!isEditingDetail">{{ order.frompage || '-' }}</span>
+                        <!-- <input v-else v-model="editForm.frompage" type="text" class="input-inline" /> -->
                     </div>
+                    <!-- <div class="info-item">
+                        <span class="label">ເບີໂທ:</span>
+                        <span class="value" v-if="!isEditingDetail">{{ order.mobile_no || '-' }}</span>
+                        <input v-else v-model="editForm.mobile_no" type="text" class="input-inline" />
+                    </div> -->
                     <div class="info-item">
                         <span class="label">ທີ່ຢູ່, ເບິໂທ, ຂົນສົ່ງ ....:</span>
-                        <span class="value">{{ order.notes }}</span>
+                        <span class="value" v-if="!isEditingDetail">{{ order.notes }}</span>
+                        <textarea v-else v-model="editForm.notes" class="input-block"></textarea>
                     </div>
-                    <div class="info-item">
-                        <span class="label">ສະຖານະ:</span>
-                        <span class="value status">{{ order.status }}</span>
-                    </div>
-                    <div class="info-item ">
-                        <button v-if="order.status === 'ອອກແບບ'" class="btn-design-completed"
-                            @click="markDesignCompleted">Design completed</button>
-                        <button v-if="order.status === 'ສັ່ງພີມ'" class="btn-update-status"
-                            @click="markNotifyCustomer">Update to : ແຈ້ງລູກຄ້າ</button>
-                        <button v-if="order.status === 'ແຈ້ງລູກຄ້າ'" class="btn-update-status"
-                            @click="markDelivered">Update to: ຈັດສົ່ງແລ້ວ</button>
 
-                    </div>
                     <!-- <div class="info-item">
             <span class="label">ຍອດລວມ:</span>
             <span class="value total">{{ formatNumber(order.total_amount) }} LAK</span>
@@ -77,12 +87,18 @@
                         <button
                             v-if="order && (order.status === 'ສັ່ງພີມ' || order.status === 'ແຈ້ງລູກຄ້າ' || order.status === 'ອອກແບບ')"
                             class="btn-print-sticker" @click="openStickerPreview">Sticker Print</button>
+                        <!-- Edit controls -->
+                        <button v-if="!isEditingDetail" class="btn-secondary" @click="enterEditMode">Edit</button>
+                        <button v-if="isEditingDetail" class="btn-primary" @click="saveDetailEdits" :disabled="savingEdits">Save</button>
+                        <button v-if="isEditingDetail" class="btn-cancel" @click="cancelDetailEdit" :disabled="savingEdits">Cancel</button>
+                        <input ref="detailFileInput" type="file" accept="image/*" multiple style="display:none" @change="handleDetailFileUpload" />
+                        <button class="btn-add-image" @click="$refs.detailFileInput.click()" v-if="isEditingDetail">Add image</button>
                     </div>
                 </div>
                 <div class="images-grid">
-                    <div v-for="(image, index) in order.images" :key="index" class="image-card"
-                        @click="openImageModal(index)">
-                        <img :src="image" :alt="`Order image ${index + 1}`" />
+                    <div v-for="(image, index) in (isEditingDetail ? editForm.image_urls : order.images)" :key="image || index" class="image-card">
+                        <img :src="image" :alt="`Order image ${index + 1}`" @click="!isEditingDetail && openImageModal(index)" />
+                        <button v-if="isEditingDetail" class="image-delete" @click.stop="deleteOrderImage(image)" :disabled="(deletingImages && deletingImages[image])">{{ (deletingImages && deletingImages[image]) ? '...' : '✕' }}</button>
                     </div>
                 </div>
             </div>
@@ -96,7 +112,7 @@
                             class="btn-add-product" @click="showAddForm = !showAddForm">
                             {{ showAddForm ? '✕ ປິດຟອມ' : '➕ ເພີ່ມສິນຄ້າ' }}
                         </button>
-                        <button v-if="order && order.status !== 'ຍົກເລີກ'" class="btn-cancel-order"
+                        <button v-if="order && order.status !== 'ຍົກເລີກ' && order.status !== 'ຈັດສົ່ງແລ້ວ'" class="btn-cancel-order"
                             @click="cancelOrder">ຍົກເລີກອໍເດີ</button>
                     </div>
                 </div>
@@ -598,6 +614,21 @@ const showAddForm = ref(false)
 const addingProduct = ref(false)
 const products = ref([])
 
+// detail edit state
+const isEditingDetail = ref(false)
+const savingEdits = ref(false)
+// per-URL deletion state map
+const deletingImages = ref({})
+const editForm = ref({
+  customer_name: '',
+  customer_clid: '',
+//   frompage: '',
+//   mobile_no: '',
+  notes: '',
+  image_urls: []
+})
+const detailFileInput = ref(null)
+
 // adjacent navigation
 const prevOrderId = ref(null)
 const nextOrderId = ref(null)
@@ -720,6 +751,16 @@ async function computeAdjacentOrders() {
         // If a status query param exists and is not 'ທັງໝົດ', filter by status.
         const statusFilterQuery = route.query.status || ''
 
+        // also initialize editForm from current order (keep in sync when fetching)
+        editForm.value = {
+            customer_name: order.value?.customer_name || '',
+            customer_clid: order.value?.customer_clid || '',
+            // frompage: order.value?.frompage || '',
+            // mobile_no: order.value?.mobile_no || '',
+            notes: order.value?.notes || '',
+            image_urls: order.value?.images ? [...order.value.images] : []
+        }
+
         let query = supabase
             .from('orders')
             .select('id, order_date')
@@ -761,6 +802,187 @@ function goToNextOrder() {
 
 function closeImageModal() {
     showModal.value = false
+}
+
+// Detail edit functions
+function enterEditMode() {
+    isEditingDetail.value = true
+    // copy current values (already synced on fetch but ensure fresh)
+    editForm.value = {
+        customer_name: order.value?.customer_name || '',
+        customer_clid: order.value?.customer_clid || '',
+        // frompage: order.value?.frompage || '',
+        // mobile_no: order.value?.mobile_no || '',
+        notes: order.value?.notes || '',
+        image_urls: order.value?.images ? [...order.value.images] : []
+    }
+}
+
+function cancelDetailEdit() {
+    isEditingDetail.value = false
+    // discard changes
+}
+
+async function handleDetailFileUpload(event) {
+    const files = event.target.files
+    if (!files || files.length === 0) return
+    try {
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i]
+            const fileExt = file.name.split('.').pop()
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`
+            const filePath = `${fileName}`
+            const { data, error: uploadError } = await supabase.storage
+                .from('order_image')
+                .upload(filePath, file)
+            if (uploadError) throw uploadError
+            const { data: publicData } = supabase.storage
+                .from('order_image')
+                .getPublicUrl(filePath)
+            editForm.value.image_urls.push(publicData.publicUrl)
+        }
+    } catch (err) {
+        console.error('Error uploading detail images:', err)
+        error.value = 'ບໍ່ສາມາດໂຫລດຮູບພາບໄດ້: ' + err.message
+    } finally {
+        // reset file input
+        if (detailFileInput.value) detailFileInput.value.value = ''
+    }
+}
+
+function removeImageFromEdit(url) {
+    editForm.value.image_urls = editForm.value.image_urls.filter(u => u !== url)
+}
+
+// Delete an image from storage (if possible) and persist the change to the order record
+async function deleteOrderImage(url) {
+    if (!confirm('ທ່ານຕ້ອງການລົບຮູບນີ້ແທ້ຫຼື?')) return
+    try {
+        // mark this url as deleting
+        deletingImages.value = { ...deletingImages.value, [url]: true }
+        error.value = null
+
+        // Try to derive storage path from public URL
+        let filePath = null
+        try {
+            const u = new URL(url)
+            // common Supabase public URL path contains '/storage/v1/object/public/<bucket>/<path>'
+            const match = u.pathname.match(/\/storage\/v1\/object\/public\/(?:[^\/]+)\/(.*)$/)
+            if (match && match[1]) {
+                filePath = decodeURIComponent(match[1])
+            } else {
+                // fallback: look for '/order_image/' segment
+                const idx = u.pathname.indexOf('/order_image/')
+                if (idx !== -1) {
+                    filePath = u.pathname.substring(idx + '/order_image/'.length)
+                    if (filePath.startsWith('/')) filePath = filePath.substring(1)
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to parse image URL for storage path:', e)
+        }
+
+        // If we have a storage path, attempt removal (best-effort)
+        if (filePath) {
+            // try a few candidate paths (decoded, basename) to increase chance of match
+            const candidates = [filePath, decodeURIComponent(filePath), filePath.split('/').pop()].filter(Boolean)
+            console.log('Attempting storage removal for candidates:', candidates)
+            let removed = false
+            for (const candidate of candidates) {
+                try {
+                    const res = await supabase.storage
+                        .from('order_image')
+                        .remove([candidate])
+                    // Supabase Storage returns { data, error }
+                    if (!res.error) {
+                        console.log('Removed storage object:', candidate, res)
+                        removed = true
+                        break
+                    } else {
+                        console.warn('Storage removal attempt failed for', candidate, res.error)
+                        // if 404, set a helpful message
+                        if (res.error && res.error.status === 404) {
+                            error.value = 'File not found in storage: ' + candidate
+                        }
+                    }
+                } catch (remErr) {
+                    console.error('Exception while removing from storage for', candidate, remErr)
+                }
+            }
+            if (!removed) {
+                console.warn('All storage removal attempts failed for', filePath)
+            }
+        }
+
+        const isInOrder = (order.value.images || []).includes(url)
+
+        if (isInOrder) {
+            // Update DB: remove url from image_urls
+            const newImages = (order.value.images || []).filter(u => u !== url)
+            const { error: updateError } = await supabase
+                .from('orders')
+                .update({ image_urls: newImages })
+                .eq('id', orderId)
+            if (updateError) {
+                const msg = updateError.message || updateError.details || JSON.stringify(updateError)
+                throw new Error('DB update failed: ' + msg)
+            }
+
+            // Update local state
+            order.value.images = newImages
+            if (isEditingDetail.value) {
+                editForm.value.image_urls = editForm.value.image_urls.filter(u => u !== url)
+            }
+            // refresh from server to ensure consistent state
+            await fetchOrderDetails()
+        } else {
+            // Image only exists in editForm (unsaved) — remove from editForm and try storage removal above
+            editForm.value.image_urls = editForm.value.image_urls.filter(u => u !== url)
+        }
+    } catch (err) {
+        console.error('Error deleting image:', err)
+        const msg = (err && err.message) ? err.message : JSON.stringify(err)
+        error.value = 'ບໍ່ສາມາດລົບຮູບພາບໄດ້: ' + msg
+    } finally {
+        const m = { ...deletingImages.value }
+        delete m[url]
+        deletingImages.value = m
+    }
+}
+
+async function saveDetailEdits() {
+    try {
+        savingEdits.value = true
+        const payload = {
+            customer_name: editForm.value.customer_name || null,
+            customer_clid: editForm.value.customer_clid || null,
+            // frompage: editForm.value.frompage || null,
+            // mobile_no: editForm.value.mobile_no || null,
+            notes: editForm.value.notes || null,
+            image_urls: editForm.value.image_urls || []
+        }
+        const { error: updateError } = await supabase
+            .from('orders')
+            .update(payload)
+            .eq('id', orderId)
+        if (updateError) throw updateError
+        // update local order
+        order.value = {
+            ...order.value,
+            customer_name: payload.customer_name,
+            customer_clid: payload.customer_clid,
+            // frompage: payload.frompage,
+            // mobile_no: payload.mobile_no,
+            notes: payload.notes,
+            images: payload.image_urls
+        }
+        isEditingDetail.value = false
+    } catch (err) {
+        console.error('Error saving detail edits:', err)
+        error.value = 'ບໍ່ສາມາດບັນທຶກການແກ້ໄຂໄດ້: ' + err.message
+    } finally {
+        savingEdits.value = false
+    }
 }
 
 function nextImage() {
@@ -1198,10 +1420,34 @@ h2 {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.order-info-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
 .order-info h2 {
     color: white;
-    margin-bottom: 20px;
+    margin: 0;
     font-size: 1.3rem;
+}
+
+.order-status-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.status-label { color: #fff; opacity: 0.95; font-weight: 600; }
+.status-label .label { margin-right: 8px; font-weight: 600; opacity: 0.9; }
+
+.status-buttons button { margin-left: 8px; }
+
+@media (max-width: 768px) {
+  .order-info-top { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .status-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
 }
 
 .info-grid {
@@ -1246,6 +1492,22 @@ h2 {
     color: #ffd700;
 }
 
+.input-inline {
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.input-block {
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    min-height: 70px;
+    resize: vertical;
+}
+
 /* ຮູບພາບ */
 .images-section {
     background: white;
@@ -1282,6 +1544,24 @@ h2 {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.image-delete {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    background: rgba(255,255,255,0.95);
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    z-index: 10;
+    font-weight: 700;
+}
+
+.image-delete[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* ລາຍການສິນຄ້າ */
@@ -1501,7 +1781,7 @@ h2 {
 
 .btn-cancel {
     padding: 10px 20px;
-    background-color: #999;
+    background-color: #ec4848;
     color: white;
     border: none;
     border-radius: 6px;
