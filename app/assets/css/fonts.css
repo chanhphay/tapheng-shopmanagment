@@ -1,14 +1,14 @@
-/* Phetsarath OT Font */
+/* Phetsarath-OT Font */
 @font-face {
-  font-family: 'Phetsarath OT';
-  src: url('/fonts/Phetsarath OT.ttf') format('truetype');
+  font-family: 'Phetsarath-OT';
+  src: url('/fonts/Phetsarath-OT.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
 /* @font-face {
-  font-family: 'Phetsarath OT';
+  font-family: 'Phetsarath-OT';
   src: url('/fonts/Phetsarath-OT-Bold.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
