@@ -66,3 +66,67 @@ CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_orders_order_date ON orders(order_date);
 CREATE INDEX idx_order_items_order_id ON order_items(order_id);
 CREATE INDEX idx_order_items_variant_id ON order_items(variant_id);
+
+
+
+
+-- 1. ตารางร้านค้า (Shop Details)
+CREATE TABLE shop_details (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    shop_name TEXT NOT NULL,
+    mobile_no TEXT,
+    remark TEXT,
+    owner_id UUID REFERENCES auth.users(id) ON DELETE CASCADE, -- เชื่อมกับ User ของ Supabase Auth
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 2. ปรับปรุงตารางเดิมให้เชื่อมกับร้านค้า (สำคัญมาก!)
+-- เพื่อให้ข้อมูล สต็อก และ ออเดอร์ แยกกันตามร้าน
+ALTER TABLE products ADD COLUMN shop_id UUID REFERENCES shop_details(id) ON DELETE CASCADE;
+ALTER TABLE orders ADD COLUMN shop_id UUID REFERENCES shop_details(id) ON DELETE CASCADE;
+ALTER TABLE stock_imports ADD COLUMN shop_id UUID REFERENCES shop_details(id) ON DELETE CASCADE;
+
+
+
+
+
+-- สร้างฟังก์ชันสำหรับบวกสต็อก
+CREATE OR REPLACE FUNCTION update_stock_after_import()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE product_variants
+    SET stock_qty = stock_qty + NEW.quantity_added,
+        updated_at = NOW()
+    WHERE id = NEW.variant_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- สร้าง Trigger ให้ทำงานทุกครั้งที่มีการเพิ่มข้อมูลใน stock_import_items
+CREATE TRIGGER tr_update_stock_on_import
+AFTER INSERT ON stock_import_items
+FOR EACH ROW
+EXECUTE FUNCTION update_stock_after_import();
+
+
+-- ฟังก์ชันสำหรับหักสต็อก
+CREATE OR REPLACE FUNCTION subtract_stock_after_sale()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- หักจำนวนสินค้าออกจากตาราง product_variants
+    UPDATE product_variants
+    SET stock_qty = stock_qty - NEW.quantity,
+        updated_at = NOW()
+    WHERE id = NEW.variant_id;
+    
+    -- ตรวจสอบว่าถ้าสต็อกติดลบ ให้แจ้งเตือน (Optional)
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- สร้าง Trigger ให้ทำงานหลังมีการ INSERT ข้อมูลลงใน order_items
+CREATE TRIGGER tr_subtract_stock_on_sale
+AFTER INSERT ON order_items
+FOR EACH ROW
+EXECUTE FUNCTION subtract_stock_after_sale();
+

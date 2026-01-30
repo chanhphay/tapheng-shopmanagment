@@ -149,8 +149,17 @@
         <!-- ຂໍ້ມູນການຊໍາລະເງິນແລະຈັດສົ່ງ -->
         <div class="section">
           <h3>ຂໍ້ມູນ</h3>
+
           <div class="form-row">
             <div class="form-group">
+            <label>ທີ່ຢູ່, ເບິໂທ, ຂົນສົ່ງ ....:</label>
+            <textarea 
+              v-model="form.notes" 
+              rows="3"
+              placeholder="ອນສ ໂນຫວາຍ, 567890123, ..."
+            ></textarea>
+          </div>
+            <!-- <div class="form-group">
               <label>ລາຄາລວມ:</label>
               <input 
                 :value="formatNumber(totalItemsAmount)" 
@@ -158,7 +167,7 @@
                 readonly
                 class="readonly total"
               />
-            </div>
+            </div> -->
             <div class="form-group">
               <label>ຄ່າສົ່ງ/ຄ່າໃຊ້ຈ່າຍອື່ນ:</label>
               <input 
@@ -192,14 +201,7 @@
 
       
 
-          <div class="form-group">
-            <label>ໝາຍເຫດ:</label>
-            <textarea 
-              v-model="form.notes" 
-              rows="3"
-              placeholder="ອື່ນໆ..."
-            ></textarea>
-          </div>
+          
 
           <div class="form-group">
             <label>ຮູບພາບ:</label>
@@ -299,12 +301,21 @@
             class="search-input"
           />
         </div>
+
+        <!-- Date range filter -->
+        <div class="search-group date-range">
+          <label>From:</label>
+          <input type="date" v-model="fromDate" class="date-input" />
+          <label>To:</label>
+          <input type="date" v-model="toDate" class="date-input" />
+        </div>
+
         <button 
-          v-if="searchCustomer || searchChild"
+          v-if="searchCustomer || searchChild || fromDate || toDate"
           class="btn-clear-search"
-          @click="searchCustomer = ''; searchChild = ''"
+          @click="searchCustomer = ''; searchChild = ''; fromDate = ''; toDate = ''"
         >
-          ✕ ລ້າງການຄົ້ນຫາ
+          ✕ Clear Filters
         </button>
       </div>
 
@@ -329,7 +340,7 @@
                 <th>ຮູບພາບ</th>
                 <th>ຍອດລວມ</th>
                 <th>ສະຖານະ</th>
-                <th>ໝາຍເຫດ</th>
+                <th>ທີ່ຢູ່, ເບິໂທ, ຂົນສົ່ງ ....</th>
                 <th>ເບີ່ງ</th>
               </tr>
             </thead>
@@ -489,6 +500,8 @@ const currentImageIndex = ref(0)
 const activeTab = ref('list') // 'create' or 'list'
 const searchCustomer = ref('')
 const searchChild = ref('')
+const fromDate = ref('')
+const toDate = ref('')
 
 const statuses = computed(() => ['ທັງໝົດ', ...orderStatuses.value.map(s => s.status)])
 
@@ -541,6 +554,19 @@ const filteredOrders = computed(() => {
     result = result.filter(o => 
       o.customer_clid.toLowerCase().includes(searchChild.value.toLowerCase())
     )
+  }
+
+  // Filter by from/to date range (order_date)
+  if (fromDate.value) {
+    const start = new Date(fromDate.value)
+    start.setHours(0,0,0,0)
+    result = result.filter(o => new Date(o.order_date) >= start)
+  }
+
+  if (toDate.value) {
+    const end = new Date(toDate.value)
+    end.setHours(23,59,59,999)
+    result = result.filter(o => new Date(o.order_date) <= end)
   }
   
   return result
@@ -734,7 +760,11 @@ async function deleteOrder(id) {
 
 // ดูรายละเอียดออเดอร์
 function viewOrder(id) {
-  navigateTo(`/orders/${id}`)
+  // pass the current status filter to the detail page so prev/next can respect it
+  const status = statusFilter.value || ''
+  // don't include 'ທັງໝົດ' (All) in the query — it means no filter
+  const query = (status && status !== 'ທັງໝົດ') ? `?status=${encodeURIComponent(status)}` : ''
+  navigateTo(`/orders/${id}${query}`)
 }
 
 // ฟังก์ชันช่วย
@@ -859,7 +889,7 @@ function goToPage(page) {
   }
 }
 
-watch(statusFilter, () => {
+watch([statusFilter, searchCustomer, searchChild, fromDate, toDate], () => {
   currentPage.value = 1
 })
 
@@ -1272,14 +1302,32 @@ button {
 
 .btn-clear-search {
   padding: 8px 16px;
-  background-color: #f44336;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
   white-space: nowrap;
   align-self: flex-end;
+}
+
+/* Date range styles */
+.search-group.date-range {
+  /* occupy full row under the other search fields */
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex: 1 1 100%;
+  min-width: 0;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.search-group.date-range label {
+  margin: 0 4px 0 0;
+  align-self: center;
+  white-space: nowrap;
+}
+.date-input {
+  padding: 8px 10px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  min-width: 160px;
 }
 
 .btn-clear-search:hover {
