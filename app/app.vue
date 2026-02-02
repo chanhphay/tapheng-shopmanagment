@@ -1,21 +1,89 @@
 <template>
   <div>
-    <AppLayout v-if="mounted">
+    <div v-if="error" class="error-screen">
+      <h1>❌ Error</h1>
+      <div class="error-details">
+        <p><strong>Message:</strong> {{ error.message }}</p>
+        <p><strong>Type:</strong> {{ error.type }}</p>
+        <p v-if="error.stack"><strong>Stack:</strong></p>
+        <pre v-if="error.stack">{{ error.stack }}</pre>
+      </div>
+      <button @click="reloadPage" class="reload-btn">Reload Page</button>
+      <div class="debug-info">
+        <p><strong>User Agent:</strong> {{ userAgent }}</p>
+        <p><strong>Timestamp:</strong> {{ new Date().toISOString() }}</p>
+      </div>
+    </div>
+    <AppLayout v-else-if="mounted">
       <NuxtPage />
     </AppLayout>
     <div v-else class="app-loading">
       <div class="loader"></div>
       <p>ກຳລັງໂຫຼດ...</p>
+      <p class="loading-step">{{ loadingStep }}</p>
     </div>
   </div>
 </template>
 
 <script setup>
 const mounted = ref(false)
+const error = ref(null)
+const userAgent = ref('')
+const loadingStep = ref('Initializing...')
 
-onMounted(() => {
-  mounted.value = true
+// Global error handler
+const captureError = (err, type = 'Error') => {
+  console.error(`[${type}]`, err)
+  error.value = {
+    message: err.message || String(err),
+    type: type,
+    stack: err.stack || '',
+    timestamp: new Date().toISOString()
+  }
+}
+
+// Capture unhandled errors
+if (process.client) {
+  window.addEventListener('error', (event) => {
+    captureError(event.error || event, 'Global Error')
+    event.preventDefault()
+  })
+  
+  window.addEventListener('unhandledrejection', (event) => {
+    captureError(event.reason, 'Unhandled Promise Rejection')
+    event.preventDefault()
+  })
+  
+  userAgent.value = navigator.userAgent
+}
+
+onMounted(async () => {
+  try {
+    console.log('App mounted - starting initialization')
+    loadingStep.value = 'Loading components...'
+    
+    await nextTick()
+    
+    loadingStep.value = 'Checking Supabase connection...'
+    console.log('Supabase URL:', useRuntimeConfig().public.supabase?.url || 'Not configured')
+    
+    await new Promise(resolve => setTimeout(resolve, 100))
+    
+    loadingStep.value = 'Ready!'
+    console.log('App initialization complete')
+    
+    mounted.value = true
+  } catch (err) {
+    console.error('Mount error:', err)
+    captureError(err, 'Mount Error')
+  }
 })
+
+const reloadPage = () => {
+  if (process.client) {
+    window.location.reload()
+  }
+}
 
 useHead({
   meta: [
@@ -93,5 +161,75 @@ table {
   margin-top: 20px;
   font-size: 1.1rem;
   color: #666;
+}
+
+.loading-step {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #999;
+}
+
+/* Error screen */
+.error-screen {
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.error-screen h1 {
+  color: #d32f2f;
+  margin-bottom: 20px;
+}
+
+.error-details {
+  background-color: #ffebee;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  word-wrap: break-word;
+}
+
+.error-details p {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.error-details pre {
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.reload-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.reload-btn:active {
+  background-color: #45a049;
+}
+
+.debug-info {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.debug-info p {
+  margin-bottom: 5px;
+  color: #666;
+  word-wrap: break-word;
 }
 </style>

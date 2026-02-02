@@ -132,11 +132,20 @@ const form = ref({
   base_price: 0
 })
 
+// Debug logging
+console.log('Index page loaded')
+console.log('Supabase client:', supabase ? 'initialized' : 'not initialized')
+
 // ดึงข้อมูลสินค้าทั้งหมด
 async function fetchProducts() {
   try {
+    console.log('Fetching products...')
     loading.value = true
     error.value = null
+    
+    if (!supabase) {
+      throw new Error('Supabase client not initialized')
+    }
     
     const { data, error: fetchError } = await supabase
       .from('products')
@@ -145,6 +154,7 @@ async function fetchProducts() {
     
     if (fetchError) throw fetchError
     
+    console.log('Products loaded:', data?.length || 0)
     products.value = data || []
   } catch (err) {
     error.value = 'ບໍ່ສາມາດໂຫຼດຂໍ້ມູນສິນຄ້າໄດ້: ' + err.message
