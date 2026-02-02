@@ -351,13 +351,19 @@ input:focus {
 }
 
 button {
-  padding: 10px 20px;
+  padding: 12px 24px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 1rem;
   font-family: 'Phetsarath-OT', sans-serif;
-  transition: background-color 0.3s;
+  transition: all 0.2s;
+  min-height: 48px;
+  min-width: 48px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
 }
 
 .btn-primary {
@@ -369,6 +375,11 @@ button {
   background-color: #45a049;
 }
 
+.btn-primary:active {
+  background-color: #3d8b40;
+  transform: scale(0.98);
+}
+
 .btn-secondary {
   background-color: #999;
   color: white;
@@ -376,6 +387,11 @@ button {
 
 .btn-secondary:hover {
   background-color: #777;
+}
+
+.btn-secondary:active {
+  background-color: #666;
+  transform: scale(0.98);
 }
 
 /* ตาราง */
@@ -419,28 +435,54 @@ td {
 
 .actions {
   display: flex;
-  gap: 5px;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .btn-edit, .btn-delete, .btn-variants {
-  padding: 5px 10px;
-  font-size: 1.2rem;
-  background: transparent;
+  padding: 8px 12px;
+  font-size: 1.3rem;
+  background: white;
   border: 1px solid #ddd;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-edit:hover {
   background-color: #e3f2fd;
+  border-color: #2196F3;
+}
+
+.btn-edit:active {
+  background-color: #bbdefb;
+  transform: scale(0.95);
 }
 
 .btn-delete:hover {
   background-color: #ffebee;
+  border-color: #f44336;
+}
+
+.btn-delete:active {
+  background-color: #ffcdd2;
+  transform: scale(0.95);
 }
 
 .btn-variants:hover {
   background-color: #fff3e0;
+  border-color: #ff9800;
+}
+
+.btn-variants:active {
+  background-color: #ffe0b2;
+  transform: scale(0.95);
 }
 
 /* สถานะ */
@@ -460,83 +502,160 @@ td {
   border-left: 4px solid #c62828;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
+/* Responsive - Tablet and iPad */
+@media (max-width: 1024px) and (min-width: 769px) {
   .container {
-    padding: 15px;
-  }
-  
-  .product-form {
     padding: 20px;
   }
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 10px;
-  }
-  
-  h1 {
-    font-size: 1.5rem;
-  }
   
   .product-form {
-    padding: 15px;
+    padding: 25px;
   }
   
-  .form-row {
-    grid-template-columns: 1fr;
+  button {
+    padding: 14px 28px;
+    font-size: 1.05rem;
+    min-height: 50px;
+  }
+  
+  .btn-edit, .btn-delete, .btn-variants {
+    min-width: 48px;
+    min-height: 48px;
+    padding: 10px 14px;
   }
   
   .table-container {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .product-form {
+    padding: 18px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .form-actions button {
+    width: 100%;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -12px;
+    padding: 0 12px;
+  }
   
   table {
-    font-size: 0.85rem;
-    min-width: 500px;
+    font-size: 0.9rem;
+    min-width: 600px;
   }
   
   th, td {
-    padding: 8px 4px;
+    padding: 10px 8px;
+  }
+  
+  .actions {
+    gap: 8px;
+  }
+  
+  .btn-edit, .btn-delete, .btn-variants {
+    min-width: 48px;
+    min-height: 48px;
+    font-size: 1.4rem;
   }
   
   button {
-    font-size: 0.9rem;
-    padding: 8px 16px;
+    font-size: 1rem;
+    padding: 14px 20px;
+    min-height: 50px;
   }
   
-  input, textarea {
-    font-size: 0.9rem;
-    padding: 8px;
+  input {
+    font-size: 1rem;
+    padding: 12px;
+    min-height: 48px;
   }
 }
 
 @media (max-width: 480px) {
   .container {
-    padding: 8px;
+    padding: 10px;
   }
   
   h1 {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
+    margin-bottom: 15px;
   }
   
   .product-form {
-    padding: 12px;
+    padding: 15px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions button {
+    width: 100%;
+    min-height: 52px;
+  }
+  
+  .table-container {
+    margin: 0 -10px;
+    padding: 0 10px;
   }
   
   table {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
+    min-width: 550px;
   }
   
   th, td {
-    padding: 6px 3px;
+    padding: 8px 5px;
+    white-space: nowrap;
+  }
+  
+  .actions {
+    gap: 6px;
+  }
+  
+  .btn-edit, .btn-delete, .btn-variants {
+    min-width: 46px;
+    min-height: 46px;
+    padding: 8px 10px;
+    font-size: 1.3rem;
   }
   
   button {
-    font-size: 0.85rem;
-    padding: 6px 12px;
+    font-size: 0.95rem;
+    padding: 12px 18px;
+    min-height: 50px;
+  }
+  
+  input {
+    font-size: 1rem;
+    padding: 12px;
+    min-height: 48px;
   }
 }
 </style>

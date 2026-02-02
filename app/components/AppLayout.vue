@@ -87,14 +87,19 @@ function closeMenu() {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 5px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
+  min-width: 48px;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .menu-toggle span {
-  width: 25px;
+  width: 28px;
   height: 3px;
   background: white;
   border-radius: 2px;
@@ -152,17 +157,25 @@ function closeMenu() {
 
 .menu a {
   display: block;
-  padding: 12px 15px;
+  padding: 15px 18px;
   color: white;
   text-decoration: none;
   border-radius: 8px;
   transition: all 0.3s;
   font-family: 'Phetsarath-OT', sans-serif;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .menu a:hover {
   background: rgba(255,255,255,0.1);
-  padding-left: 20px;
+  padding-left: 23px;
+}
+
+.menu a:active {
+  background: rgba(255,255,255,0.3);
 }
 
 .menu a.active {
@@ -175,23 +188,31 @@ function closeMenu() {
   overflow-y: auto;
 }
 
-/* Tablet styles (768px - 1024px) */
-@media (max-width: 1024px) {
+/* Tablet and iPad styles (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
   .sidebar {
-    width: 200px;
+    width: 220px;
   }
   
   .logo h2 {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
   }
   
   .menu a {
-    padding: 10px 12px;
-    font-size: 0.95rem;
+    padding: 14px 16px;
+    font-size: 1rem;
+    min-height: 50px;
   }
 }
 
-/* Mobile styles (< 768px) */
+/* iPad specific */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .content {
+    padding: 0;
+  }
+}
+
+/* Mobile and small tablet styles (< 768px) */
 @media (max-width: 768px) {
   .mobile-header {
     display: flex;
@@ -200,12 +221,14 @@ function closeMenu() {
   .sidebar {
     position: fixed;
     top: 0;
-    left: -250px;
+    left: -270px;
     bottom: 0;
-    width: 250px;
-    transition: left 0.3s ease-in-out;
+    width: 270px;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 999;
-    padding-top: 20px;
+    padding: 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .sidebar.menu-open {
@@ -216,30 +239,46 @@ function closeMenu() {
     display: none;
   }
   
+  .menu li {
+    margin-bottom: 8px;
+  }
+  
+  .menu a {
+    padding: 16px 18px;
+    font-size: 1rem;
+    min-height: 52px;
+  }
+  
   .overlay {
     display: block;
   }
   
   .content {
-    margin-top: 60px;
+    margin-top: 65px;
     width: 100%;
   }
 }
 
 /* Small mobile (< 480px) */
 @media (max-width: 480px) {
+  .mobile-header {
+    padding: 12px 15px;
+  }
+  
   .mobile-header h2 {
     font-size: 1rem;
   }
   
   .sidebar {
-    width: 220px;
-    left: -220px;
+    width: 240px;
+    left: -240px;
+    padding: 15px;
   }
   
   .menu a {
-    padding: 10px 12px;
-    font-size: 0.9rem;
+    padding: 14px 15px;
+    font-size: 0.95rem;
+    min-height: 50px;
   }
 }
 </style>
