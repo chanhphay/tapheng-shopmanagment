@@ -336,11 +336,11 @@
                 <th>ວັນທີ</th>
                 <th>ລູກຄ້າ</th>
                 <th>ລູກ</th>
-                <th>ເພກ</th>
+                <!-- <th>ເພກ</th> -->
                 <th>ຮູບພາບ</th>
-                <th>ຍອດລວມ</th>
+                <!-- <th>ຍອດລວມ</th> -->
                 <th>ສະຖານະ</th>
-                <th>ທີ່ຢູ່, ເບິໂທ, ຂົນສົ່ງ ....</th>
+                <!-- <th>ທີ່ຢູ່, ເບິໂທ, ຂົນສົ່ງ ....</th> -->
                 <th>ເບີ່ງ</th>
               </tr>
             </thead>
@@ -350,7 +350,7 @@
                 <td>{{ formatDate(order.order_date) }}</td>
                 <td class="customer-name">{{ order.customer_name }}</td>
                 <td>{{ order.customer_clid }}</td>
-                <td>{{ order.frompage || '-' }}</td>
+                <!-- <td>{{ order.frompage || '-' }}</td> -->
                 <td class="image-cell">
                   <div v-if="order.image_urls && order.image_urls.length > 0" class="image-preview">
                     <img 
@@ -370,13 +370,13 @@
                   </div>
                   <span v-else>-</span>
                 </td>
-                <td class="amount">{{ formatNumber(order.total_amount) }}</td>
+                <!-- <td class="amount">{{ formatNumber(order.total_amount) }}</td> -->
                 <td>
                   <span class="status-badge">
                     {{ order.status }}
                   </span>
                 </td>
-                <td class="notes-cell">{{ order.notes || '-' }}</td>
+                <!-- <td class="notes-cell">{{ order.notes || '-' }}</td> -->
                 <td class="actions-cell">
                   <button class="btn-detail" @click="viewOrder(order.id)" title="ລາຍລະອຽດ">
                     👁️
@@ -969,7 +969,7 @@ h1 {
 }
 
 .tab-btn {
-  padding: 12px 24px;
+  padding: 15px 28px;
   background-color: transparent;
   color: #666;
   border: none;
@@ -977,13 +977,21 @@ h1 {
   cursor: pointer;
   font-size: 1.1rem;
   font-weight: 600;
-  transition: all 0.3s;
+  transition: all 0.2s;
   border-radius: 0;
+  min-height: 50px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .tab-btn:hover {
   background-color: #f5f5f5;
   color: #667eea;
+}
+
+.tab-btn:active {
+  background-color: #e8eaf6;
 }
 
 .tab-btn.active {
@@ -1247,15 +1255,25 @@ button {
 }
 
 .filter-btn {
-  padding: 8px 16px;
+  padding: 12px 20px;
   background-color: #f0f0f0;
   color: #666;
   border: 2px solid transparent;
   font-family: 'Phetsarath-OT', sans-serif;
+  min-height: 48px;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .filter-btn:hover {
   background-color: #e0e0e0;
+}
+
+.filter-btn:active {
+  background-color: #d0d0d0;
+  transform: scale(0.98);
 }
 
 .filter-btn.active {
@@ -1287,17 +1305,19 @@ button {
 }
 
 .search-input {
-  padding: 8px 12px;
+  padding: 12px 14px;
   border: 2px solid #ddd;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 1rem;
   font-family: 'Phetsarath-OT', sans-serif;
   transition: border-color 0.3s;
+  min-height: 48px;
 }
 
 .search-input:focus {
   outline: none;
   border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .btn-clear-search {
@@ -1323,11 +1343,18 @@ button {
   white-space: nowrap;
 }
 .date-input {
-  padding: 8px 10px;
+  padding: 12px 14px;
   border: 2px solid #ddd;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 1rem;
   min-width: 160px;
+  min-height: 48px;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .btn-clear-search:hover {
@@ -1716,78 +1743,31 @@ button {
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
+@media (max-width: 1024px) and (min-width: 769px) {
   .container {
-    padding: 15px;
+    padding: 18px;
   }
   
   .order-form, .orders-list {
-    padding: 20px;
-  }
-  
-  .search-filters {
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .search-group {
-    width: 100%;
-  }
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 10px;
-  }
-  
-  h1 {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-  }
-  
-  h2, h3 {
-    font-size: 1.1rem;
-  }
-  
-  .tabs {
-    flex-wrap: wrap;
+    padding: 22px;
   }
   
   .tab-btn {
-    padding: 10px 16px;
-    font-size: 0.95rem;
-    flex: 1;
-    min-width: 150px;
+    padding: 14px 24px;
+    min-height: 52px;
   }
   
-  .order-form, .orders-list {
-    padding: 15px;
-  }
-  
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-  
-  .item-row {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    padding: 10px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    margin-bottom: 10px;
-  }
-  
-  .btn-remove {
-    width: 100%;
+  .filter-btn {
+    padding: 14px 22px;
+    min-height: 50px;
   }
   
   .search-filters {
-    padding: 12px;
+    gap: 12px;
   }
   
-  .search-group input {
-    font-size: 0.9rem;
-    padding: 8px;
+  .search-group {
+    min-width: 250px;
   }
   
   .table-container {
@@ -1796,34 +1776,140 @@ button {
   }
   
   .orders-table {
-    font-size: 0.75rem;
-    min-width: 800px;
+    min-width: 1000px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+  
+  h1 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+  }
+  
+  h2, h3 {
+    font-size: 1.2rem;
+  }
+  
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -12px 20px;
+    padding: 0 12px;
+  }
+  
+  .tab-btn {
+    padding: 14px 20px;
+    font-size: 1rem;
+    flex-shrink: 0;
+    min-width: 160px;
+    min-height: 52px;
+  }
+  
+  .order-form, .orders-list {
+    padding: 18px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .item-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  
+  .btn-remove {
+    width: 100%;
+    min-height: 50px;
+  }
+  
+  .filters {
+    gap: 8px;
+    margin: 0 -12px 20px;
+    padding: 0 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+  }
+  
+  .filter-btn {
+    padding: 12px 18px;
+    font-size: 0.95rem;
+    min-height: 48px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  
+  .search-filters {
+    padding: 0;
+    gap: 12px;
+  }
+  
+  .search-group {
+    min-width: auto;
+  }
+  
+  .search-group input, .search-input, .date-input {
+    font-size: 1rem;
+    padding: 12px 14px;
+    min-height: 50px;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -18px;
+    padding: 0 18px;
+  }
+  
+  .orders-table {
+    font-size: 0.85rem;
+    min-width: 900px;
   }
   
   .orders-table th,
   .orders-table td {
-    padding: 8px 4px;
+    padding: 10px 6px;
+    white-space: nowrap;
   }
   
   .thumbnail {
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
   }
   
   .image-preview {
-    width: 50px;
-    height: 50px;
+    width: 55px;
+    height: 55px;
+  }
+  
+  .btn-view-images, .btn-detail {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 8px 10px;
   }
   
   .pagination {
     flex-wrap: wrap;
-    gap: 5px;
-    font-size: 0.85rem;
+    gap: 6px;
+    font-size: 0.9rem;
+    justify-content: center;
   }
   
   .page-btn {
-    min-width: 35px;
-    padding: 6px 10px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px 14px;
   }
   
   .modal-content {
@@ -1837,73 +1923,138 @@ button {
   }
   
   .modal-nav.prev {
-    left: 5px;
+    left: 10px;
   }
   
   .modal-nav.next {
-    right: 5px;
+    right: 10px;
   }
   
   .form-actions {
     flex-direction: column;
+    gap: 12px;
   }
   
   .form-actions button {
     width: 100%;
+    min-height: 52px;
   }
   
-  button, input[type="file"] + label {
-    font-size: 0.9rem;
+  button {
+    font-size: 1rem;
+    min-height: 50px;
+  }
+  
+  input, select, textarea {
+    font-size: 1rem;
+    padding: 12px;
+    min-height: 50px;
   }
 }
 
 @media (max-width: 480px) {
   .container {
-    padding: 8px;
+    padding: 10px;
   }
   
   h1 {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+  }
+  
+  h2, h3 {
+    font-size: 1.1rem;
+  }
+  
+  .tabs {
+    margin: 0 -10px 15px;
+    padding: 0 10px;
   }
   
   .tab-btn {
-    padding: 8px 12px;
-    font-size: 0.85rem;
-    min-width: 120px;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    min-width: 140px;
+    min-height: 50px;
   }
   
   .order-form, .orders-list {
-    padding: 12px;
+    padding: 15px;
+  }
+  
+  .filters {
+    margin: 0 -15px 15px;
+    padding: 0 15px;
+    gap: 6px;
+  }
+  
+  .filter-btn {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    min-height: 46px;
   }
   
   input, select, textarea {
-    font-size: 0.9rem;
-    padding: 8px;
+    font-size: 1rem;
+    padding: 12px;
+    min-height: 50px;
+  }
+  
+  .search-input, .date-input {
+    font-size: 1rem;
+    padding: 12px;
+    min-height: 50px;
+  }
+  
+  .table-container {
+    margin: 0 -15px;
+    padding: 0 15px;
   }
   
   .orders-table {
-    font-size: 0.7rem;
-    min-width: 700px;
+    font-size: 0.8rem;
+    min-width: 800px;
+  }
+  
+  .orders-table th,
+  .orders-table td {
+    padding: 8px 5px;
   }
   
   .thumbnail {
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
+  }
+  
+  .image-preview {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .btn-view-images, .btn-detail {
+    min-width: 42px;
+    min-height: 42px;
   }
   
   .pagination {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
+    gap: 5px;
   }
   
   .page-btn {
-    min-width: 30px;
-    padding: 4px 8px;
+    min-width: 42px;
+    min-height: 42px;
+    padding: 8px 12px;
   }
   
   .modal-nav button {
-    width: 35px;
-    height: 35px;
-    font-size: 1.2rem;
+    width: 44px;
+    height: 44px;
+    font-size: 1.3rem;
+  }
+  
+  button {
+    min-height: 50px;
   }
 }
 </style>

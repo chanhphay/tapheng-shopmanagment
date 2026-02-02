@@ -117,10 +117,12 @@ function closeMenu() {
   z-index: 998;
   opacity: 0;
   transition: opacity 0.3s;
+  pointer-events: none;
 }
 
 .overlay.show {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .sidebar {
@@ -227,8 +229,10 @@ function closeMenu() {
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 999;
     padding: 20px;
+    padding-top: 30px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    box-shadow: 2px 0 15px rgba(0,0,0,0.3);
   }
   
   .sidebar.menu-open {
@@ -236,7 +240,16 @@ function closeMenu() {
   }
   
   .sidebar .logo {
-    display: none;
+    display: block;
+    margin-bottom: 25px;
+  }
+  
+  .sidebar .logo h2 {
+    font-size: 1.1rem;
+  }
+  
+  .menu {
+    margin-top: 10px;
   }
   
   .menu li {
@@ -247,6 +260,8 @@ function closeMenu() {
     padding: 16px 18px;
     font-size: 1rem;
     min-height: 52px;
+    display: flex;
+    align-items: center;
   }
   
   .overlay {
