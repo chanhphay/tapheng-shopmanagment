@@ -11,11 +11,11 @@
       <div class="info-grid">
         <div>
           <span class="label">ຕົ້ນທືນ:</span>
-          <span class="value">{{ formatNumber(product.base_cost) }} บาท</span>
+          <span class="value">{{ formatNumber(product.base_cost) }} LAK</span>
         </div>
         <div>
           <span class="label">ລາຄາຂາຍ:</span>
-          <span class="value">{{ formatNumber(product.base_price) }} บาท</span>
+          <span class="value">{{ formatNumber(product.base_price) }} LAK</span>
         </div>
       </div>
     </div>
@@ -433,7 +433,7 @@ input {
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
   box-sizing: border-box;
 }
 
@@ -454,7 +454,7 @@ button {
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
   transition: all 0.3s;
 }
 

@@ -50,7 +50,7 @@
             class="btn-secondary" 
             @click="cancelEdit"
           >
-            ยกเลิก
+            ຍົກເລີກ
           </button>
         </div>
       </form>
@@ -61,7 +61,8 @@
       <h2>ລາຍການສິນຄ້າ</h2>
       <div v-if="loading" class="loading">ກຳລັງໂຫຼດ...</div>
       <div v-else-if="products.length === 0" class="no-data">ຍັງບໍ່ມີສິນຄ້າ</div>
-      <table v-else>
+      <div v-else class="table-container">
+      <table>
         <thead>
           <tr>
             <th>ຊື່ສິນຄ້າ</th>
@@ -107,6 +108,7 @@
           </tr>
         </tbody>
       </table>
+      </div>
     </div>
 
     <!-- แสดงข้อผิดพลาด -->
@@ -323,7 +325,7 @@ input {
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
   box-sizing: border-box;
 }
 
@@ -344,7 +346,7 @@ button {
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
   transition: background-color 0.3s;
 }
 

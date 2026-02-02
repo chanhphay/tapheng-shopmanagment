@@ -80,7 +80,7 @@ function closeMenu() {
 .mobile-header h2 {
   margin: 0;
   font-size: 1.2rem;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
 }
 
 .menu-toggle {
@@ -137,7 +137,7 @@ function closeMenu() {
 .logo h2 {
   margin: 0;
   font-size: 1.3rem;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
 }
 
 .menu {
@@ -157,7 +157,7 @@ function closeMenu() {
   text-decoration: none;
   border-radius: 8px;
   transition: all 0.3s;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
 }
 
 .menu a:hover {

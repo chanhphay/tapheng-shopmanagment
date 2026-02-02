@@ -1051,7 +1051,7 @@ label {
   margin-bottom: 5px;
   font-weight: 600;
   color: #555;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
 }
 
 input, select, textarea {
@@ -1060,7 +1060,7 @@ input, select, textarea {
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
   box-sizing: border-box;
 }
 
@@ -1089,7 +1089,7 @@ input.grand-total {
 
 textarea {
   resize: vertical;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
 }
 
 .image-upload {
@@ -1182,7 +1182,7 @@ button {
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
   transition: all 0.3s;
 }
 
@@ -1251,7 +1251,7 @@ button {
   background-color: #f0f0f0;
   color: #666;
   border: 2px solid transparent;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
 }
 
 .filter-btn:hover {
@@ -1291,7 +1291,7 @@ button {
   border: 2px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
   transition: border-color 0.3s;
 }
 

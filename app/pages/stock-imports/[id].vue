@@ -204,7 +204,7 @@ onMounted(() => {
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
 }
 
 .btn-back:hover {
@@ -367,7 +367,7 @@ h2 {
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
   transition: all 0.3s;
 }
 

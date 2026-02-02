@@ -323,7 +323,7 @@ function openStickerPreview() {
             box-sizing: border-box;
             border: 1px solid #000;
             padding: 0.2cm;
-            font-family: 'Phetsarath OT', sans-serif;
+            font-family: 'Phetsarath-OT', sans-serif;
             background: #fff;
           }
           .sticker-main-table {
@@ -366,7 +366,7 @@ function openStickerPreview() {
             border: none;
             border-radius: 6px;
             font-size: 1.1em;
-            font-family: 'Phetsarath OT', sans-serif;
+            font-family: 'Phetsarath-OT', sans-serif;
             font-weight: 600;
             cursor: pointer;
             transition: background 0.3s;
@@ -466,7 +466,7 @@ function printStickerForm() {
             box-sizing: border-box;
             border: 1px solid #000;
             padding: 0.2cm;
-            font-family: 'Phetsarath OT', sans-serif;
+            font-family: 'Phetsarath-OT', sans-serif;
             background: #fff;
           }
           .sticker-main-table {
@@ -1222,7 +1222,7 @@ height: 15cm;
 box-sizing: border-box;
 border: 1px dashed #888;
 padding: 1cm;
-font-family: 'Phetsarath OT', sans-serif;
+font-family: 'Phetsarath-OT', sans-serif;
 display: flex;
 flex-direction: column;
 justify-content: flex-start;
@@ -1285,12 +1285,12 @@ background: #fff;
 .btn-next {
 background: #fff;
 }
-/* Ensure Phetsarath OT font is applied globally for this page */
+/* Ensure Phetsarath-OT font is applied globally for this page */
 html,
 body,
 tr,
 * {
-    font-family: 'Phetsarath OT', sans-serif !important;
+    font-family: 'Phetsarath-OT', sans-serif !important;
 }
 
 .btn-design-completed {
@@ -1387,7 +1387,7 @@ tr,
     border-radius: 4px;
     cursor: pointer;
     font-size: 1rem;
-    font-family: 'Phetsarath OT', sans-serif;
+    font-family: 'Phetsarath-OT', sans-serif;
 }
 
 .btn-back:hover {
@@ -1689,7 +1689,7 @@ h2 {
     font-size: 1rem;
     font-weight: 600;
     transition: all 0.3s;
-    font-family: 'Phetsarath OT', sans-serif;
+    font-family: 'Phetsarath-OT', sans-serif;
 }
 
 .btn-add-product:hover {
@@ -1738,7 +1738,7 @@ h2 {
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
-    font-family: 'Phetsarath OT', sans-serif;
+    font-family: 'Phetsarath-OT', sans-serif;
 }
 
 .form-group input:focus,
@@ -1767,7 +1767,7 @@ h2 {
     font-size: 1rem;
     font-weight: 600;
     transition: all 0.3s;
-    font-family: 'Phetsarath OT', sans-serif;
+    font-family: 'Phetsarath-OT', sans-serif;
 }
 
 .btn-save:hover:not(:disabled) {
@@ -1789,7 +1789,7 @@ h2 {
     font-size: 1rem;
     font-weight: 600;
     transition: all 0.3s;
-    font-family: 'Phetsarath OT', sans-serif;
+    font-family: 'Phetsarath-OT', sans-serif;
 }
 
 .btn-cancel:hover {

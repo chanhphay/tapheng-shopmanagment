@@ -584,7 +584,7 @@ label {
   margin-bottom: 5px;
   font-weight: 600;
   color: #555;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
 }
 
 input, select, textarea {
@@ -593,7 +593,7 @@ input, select, textarea {
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
   box-sizing: border-box;
 }
 
@@ -616,7 +616,7 @@ input.grand-total {
 
 textarea {
   resize: vertical;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
 }
 
 button {
@@ -625,7 +625,7 @@ button {
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
   transition: all 0.3s;
 }
 

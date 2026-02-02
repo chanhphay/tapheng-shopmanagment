@@ -22,7 +22,7 @@ useHead({
 }
 
 body {
-  font-family: 'Phetsarath OT', sans-serif;
+  font-family: 'Phetsarath-OT', sans-serif;
   background-color: #f5f5f5;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
