@@ -12,6 +12,10 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'ລະບົບຈັດການຮ້ານຕາແພງ Baby',
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'format-detection', content: 'telephone=no' }
+      ],
       link: [
         { rel: 'icon', type: 'image/png', href: '/images/logo.png' }
       ]
@@ -19,5 +23,10 @@ export default defineNuxtConfig({
   },
   nitro: {
     preset: 'cloudflare-pages',
+  },
+  vite: {
+    optimizeDeps: {
+      exclude: ['@supabase/supabase-js']
+    }
   }
 })
