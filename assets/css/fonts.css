@@ -1,0 +1,54 @@
+/* fonts.css
+   - Loads Phetsarath-OT from /fonts
+   - Sets base font-family and responsive root font-size for mobile
+*/
+
+@font-face {
+  font-family: 'Phetsarath-OT';
+  src: url('/fonts/Phetsarath-OT.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Base size (desktop) — use rems in components to scale with this */
+  font-size: 16px;
+}
+
+/* Mobile-friendly root scaling */
+@media (max-width: 900px) {
+  :root { font-size: 15px; }
+}
+@media (max-width: 600px) {
+  :root { font-size: 14px; }
+}
+@media (max-width: 380px) {
+  :root { font-size: 13px; }
+}
+
+/* Global body styles */
+body {
+  font-family: 'Phetsarath-OT', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1rem; /* 1rem = root */
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive heading sizes */
+h1 { font-size: clamp(1.25rem, 4.2vw, 1.8rem); margin: 0 0 0.6rem; }
+h2 { font-size: clamp(1.05rem, 3.2vw, 1.25rem); margin: 0 0 0.5rem; }
+
+/* Buttons and inputs should scale well on small screens */
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+/* Slight spacing adjustments for very small screens */
+@media (max-width: 420px) {
+  .container { padding: 12px; }
+  .form-row { flex-direction: column; gap: 10px; }
+  .tab-btn { padding: 10px 12px; }
+}

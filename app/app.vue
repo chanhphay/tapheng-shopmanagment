@@ -14,14 +14,16 @@
         <p><strong>Timestamp:</strong> {{ new Date().toISOString() }}</p>
       </div>
     </div>
-    <AppLayout v-else-if="mounted">
+    <AppLayout>
       <NuxtPage />
+
+      <!-- Loading overlay shown until app finishes mounting to avoid SSR mismatch -->
+      <div v-if="!mounted" class="app-loading-overlay">
+        <div class="loader"></div>
+        <p>ກຳລັງໂຫຼດ...</p>
+        <p class="loading-step">{{ loadingStep }}</p>
+      </div>
     </AppLayout>
-    <div v-else class="app-loading">
-      <div class="loader"></div>
-      <p>ກຳລັງໂຫຼດ...</p>
-      <p class="loading-step">{{ loadingStep }}</p>
-    </div>
   </div>
 </template>
 
@@ -133,14 +135,16 @@ table {
   -webkit-overflow-scrolling: touch;
 }
 
-/* App loading screen */
-.app-loading {
+/* App loading overlay */
+.app-loading-overlay {
+  position: fixed;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: rgba(245,245,245,0.95);
+  z-index: 2000;
 }
 
 .loader {
@@ -157,7 +161,7 @@ table {
   100% { transform: rotate(360deg); }
 }
 
-.app-loading p {
+.app-loading-overlay p {
   margin-top: 20px;
   font-size: 1.1rem;
   color: #666;

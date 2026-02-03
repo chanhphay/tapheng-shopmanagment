@@ -31,13 +31,22 @@
             📝 ອໍເດີລູກຄ້າ
           </NuxtLink>
         </li>
-      </ul>
+        <li>
+          <NuxtLink to="/expenses" :class="{ active: $route.path.startsWith('/expenses') }" @click="closeMenu">
+            💸 ຄ່າໃຊ້ຈ່າຍອື່ນ
+          </NuxtLink>
+        </li>        <li>
+          <NuxtLink to="/reports/profit" :class="{ active: $route.path.startsWith('/reports') }" @click="closeMenu">
+            📊 ລາຍງານ
+          </NuxtLink>
+        </li>      </ul>
     </nav>
     
     <!-- Overlay for mobile menu -->
     <div class="overlay" :class="{ 'show': menuOpen }" @click="closeMenu"></div>
     
     <main class="content">
+      <div class="debug-route">Route: {{$route.path}}</div>
       <slot />
     </main>
   </div>
@@ -188,6 +197,9 @@ function closeMenu() {
 .content {
   flex: 1;
   overflow-y: auto;
+  background: #fff; /* make content area visible while debugging */
+  padding: 20px;
+  min-height: 100vh;
 }
 
 /* Tablet and iPad styles (768px - 1024px) */

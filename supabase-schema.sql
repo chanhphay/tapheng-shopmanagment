@@ -119,7 +119,7 @@ BEGIN
         updated_at = NOW()
     WHERE id = NEW.variant_id;
     
-    -- ตรวจสอบว่าถ้าสต็อกติดลบ ให้แจ้งเตือน (Optional)
+    -- ตรวจสอบว่าถ้าสต๊อกติดลบ ให้แจ้งเตือน (Optional)
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -128,5 +128,25 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER tr_subtract_stock_on_sale
 AFTER INSERT ON order_items
 FOR EACH ROW
-EXECUTE FUNCTION subtract_stock_after_sale();
+EXECUTE FUNCTION subtract_stock_on_sale();
+
+
+-- ตารางหมวดหมู่ค่าใช้จ่าย (expense_categories)
+CREATE TABLE IF NOT EXISTS expense_categories (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL -- เช่น 'ค่าโฆษณา', 'ค่าวัสดุแพ็คของ', 'ค่าเช่าที่'
+);
+
+-- ตารางบันทึกค่าใช้จ่าย (expenses)
+CREATE TABLE IF NOT EXISTS expenses (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    category_id UUID REFERENCES expense_categories(id) ON DELETE SET NULL,
+    amount NUMERIC NOT NULL DEFAULT 0,
+    expense_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    remark TEXT,
+    image_url TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(expense_date);
+CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category_id);
 
