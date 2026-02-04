@@ -35,11 +35,48 @@
           <NuxtLink to="/expenses" :class="{ active: $route.path.startsWith('/expenses') }" @click="closeMenu">
             💸 ຄ່າໃຊ້ຈ່າຍອື່ນ
           </NuxtLink>
-        </li>        <li>
-          <NuxtLink to="/reports/profit" :class="{ active: $route.path.startsWith('/reports') }" @click="closeMenu">
-            📊 ລາຍງານ
-          </NuxtLink>
-        </li>      </ul>
+        </li>
+        <li class="has-submenu">
+          <div class="menu-item" :class="{ active: $route.path.startsWith('/salaries') }" @click="toggleSalariesMenu">
+            <span>💰 ເງິນເດືອນ</span>
+            <svg class="arrow" :class="{ open: salariesMenuOpen }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+          <ul class="submenu" :class="{ open: salariesMenuOpen }">
+            <li>
+              <NuxtLink to="/salaries/employees" :class="{ active: $route.path === '/salaries/employees' }" @click="closeMenu">
+                👥 ຂໍ້ມູນພະນັກງານ
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/salaries/payments" :class="{ active: $route.path === '/salaries/payments' }" @click="closeMenu">
+                💵 ບັນທຶກການຈ່າຍ
+              </NuxtLink>
+            </li>
+          </ul>
+        </li>
+        <li class="has-submenu">
+          <div class="menu-item" :class="{ active: $route.path.startsWith('/reports') }" @click="toggleReportsMenu">
+            <span>📊 ລາຍງານ</span>
+            <svg class="arrow" :class="{ open: reportsMenuOpen }" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+          <ul class="submenu" :class="{ open: reportsMenuOpen }">
+            <li>
+              <NuxtLink to="/reports/profit" :class="{ active: $route.path === '/reports/profit' }" @click="closeMenu">
+                📊 ລາຍງານຜົນກຳໄລ
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/reports/stock" :class="{ active: $route.path === '/reports/stock' }" @click="closeMenu">
+                📦 ລາຍງານສະຕ໋ອກສິນຄ້າ
+              </NuxtLink>
+            </li>
+          </ul>
+        </li>
+      </ul>
     </nav>
     
     <!-- Overlay for mobile menu -->
@@ -54,6 +91,8 @@
 
 <script setup>
 const menuOpen = ref(false)
+const reportsMenuOpen = ref(false)
+const salariesMenuOpen = ref(false)
 
 function toggleMenu() {
   menuOpen.value = !menuOpen.value
@@ -62,6 +101,25 @@ function toggleMenu() {
 function closeMenu() {
   menuOpen.value = false
 }
+
+function toggleReportsMenu() {
+  reportsMenuOpen.value = !reportsMenuOpen.value
+}
+
+function toggleSalariesMenu() {
+  salariesMenuOpen.value = !salariesMenuOpen.value
+}
+
+// Auto-open submenus if on corresponding pages
+const route = useRoute()
+watch(() => route.path, (newPath) => {
+  if (newPath.startsWith('/reports')) {
+    reportsMenuOpen.value = true
+  }
+  if (newPath.startsWith('/salaries')) {
+    salariesMenuOpen.value = true
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>
@@ -192,6 +250,99 @@ function closeMenu() {
 .menu a.active {
   background: rgba(255,255,255,0.2);
   font-weight: 600;
+}
+
+/* Submenu styles */
+.has-submenu {
+  position: relative;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 18px;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: 'Phetsarath-OT', sans-serif;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.menu-item:hover {
+  background: rgba(255,255,255,0.1);
+  padding-left: 23px;
+}
+
+.menu-item:active {
+  background: rgba(255,255,255,0.3);
+}
+
+.menu-item.active {
+  background: rgba(255,255,255,0.2);
+  font-weight: 600;
+}
+
+.menu-item .arrow {
+  transition: transform 0.3s;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.menu-item .arrow.open {
+  transform: rotate(180deg);
+}
+
+.submenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+  opacity: 0;
+}
+
+.submenu.open {
+  max-height: 500px;
+  opacity: 1;
+}
+
+.submenu li {
+  margin-bottom: 5px;
+}
+
+.submenu a {
+  display: block;
+  padding: 12px 18px 12px 45px;
+  color: rgba(255,255,255,0.9);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s;
+  font-family: 'Phetsarath-OT', sans-serif;
+  font-size: 0.95rem;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.submenu a:hover {
+  background: rgba(255,255,255,0.15);
+  padding-left: 50px;
+  color: white;
+}
+
+.submenu a:active {
+  background: rgba(255,255,255,0.3);
+}
+
+.submenu a.active {
+  background: rgba(255,255,255,0.25);
+  font-weight: 600;
+  color: white;
 }
 
 .content {

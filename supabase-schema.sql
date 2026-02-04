@@ -150,3 +150,24 @@ CREATE TABLE IF NOT EXISTS expenses (
 CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(expense_date);
 CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category_id);
 
+-- 1. ตารางข้อมูลพนักงาน
+CREATE TABLE employees (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    full_name TEXT NOT NULL,
+    position TEXT,            -- เช่น ช่างสกรีน, แอดมิน
+    salary_rate NUMERIC,      -- เงินเดือนพื้นฐาน หรือค่าแรงรายวัน
+    bank_account TEXT,        -- เลขบัญชี (จะได้ไม่ลืมตอนโอน)
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 2. ตารางบันทึกการจ่ายเงินเดือน
+CREATE TABLE salary_payments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    employee_id UUID REFERENCES employees(id) ON DELETE CASCADE,
+    amount NUMERIC NOT NULL,   -- ยอดเงินที่จ่ายจริง (รวม OT หรือหักประกันสังคม)
+    payment_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    period_month TEXT,         -- จ่ายของเดือนไหน (เช่น "มกราคม 2024")
+    remark TEXT,               -- หมายเหตุ เช่น "รวมค่าโอที 2 ชม."
+    slip_url TEXT              -- เก็บรูปสลิปการโอนเงิน
+);

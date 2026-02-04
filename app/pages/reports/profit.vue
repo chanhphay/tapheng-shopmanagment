@@ -1,11 +1,11 @@
 <template>
   <div class="container">
     <h1>ລາຍງານຜົນກຳໄລ</h1>
-
     <div class="filters">
       <div class="tabs-inline">
         <button :class="['tab-btn', { active: activeTab === 'profit' }]" @click="activeTab = 'profit'">📊 ຜົນກຳໄລ</button>
         <button :class="['tab-btn', { active: activeTab === 'status' }]" @click="activeTab = 'status'">📑 ຍອດຕາມສະຖານະ</button>
+        <!-- <button class="tab-btn" @click="navigateTo('/stock-imports/stock')">📦 ສະຕ໋ອກສິນຄ້າ</button> -->
       </div>
 
       <label>ຈາກວັນທີ:</label>
@@ -14,7 +14,6 @@
       <div class="filter-controls">
         <label>ຫາວັນທີ:</label>
         <input type="date" v-model="to" />
-
         <button class="btn-primary" @click="runReports" :disabled="loading">
           <svg v-if="!loading" class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden>
             <rect x="3" y="3" width="18" height="18" rx="2"></rect>
@@ -22,19 +21,15 @@
             <path d="M8 11h8"></path>
             <path d="M8 15h8"></path>
           </svg>
-
           <svg v-else class="spinner" viewBox="0 0 50 50" width="16" height="16" aria-hidden>
             <circle cx="25" cy="25" r="20" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="31.4 31.4"></circle>
           </svg>
-
           <span class="btn-label">ຄຳນວນ</span>
         </button>
       </div>
     </div>
-
     <div v-if="loading" class="loading">ກຳລັງຄຳນວນ...</div>
     <div v-if="error" class="error">{{ error }}</div>
-
     <div v-if="!loading && !error" class="results">
       <!-- Profit results -->
       <div v-if="activeTab === 'profit'">
@@ -47,6 +42,7 @@
             <tr><th>ກຳໄລຂັ້ນຕົ້ນ</th><td class="amount">{{ formatNumber(results.grossProfit) }} LAK</td></tr>
             <tr><th>ຕົ້ນທຶນນຳເຂົ້າສີນຄ້າ (ລວມ ຈາກ stock_imports)</th><td class="amount">{{ formatNumber(results.stockImports) }} LAK</td></tr>
             <tr><th>ຄ່າໃຊ້ຈ່າຍອື່ນໆ</th><td class="amount">{{ formatNumber(results.expenses) }} LAK</td></tr>
+            <tr><th>ຄ່າເງິນເດືອນພະນັກງານ</th><td class="amount">{{ formatNumber(results.salaryPayments) }} LAK</td></tr>
           </tbody>
           <tfoot>
             <tr class="summary" :class="netClass()"><th>ກຳໄລສຸດທິ</th>   <td class="amountsum">{{ formatNumber(results.netProfit) }} LAK</td></tr>
@@ -54,7 +50,7 @@
         </table>
 
         <div class="notes">
-          <p>ໝາຍເຫດ: ຄຳນວນຈາກຕາຕະລາງ <code>orders</code> (status = 'ຈັດສົ່ງແລ້ວ'), <code>order_items</code>, ແລະຂໍ້ມູນລາຄາຈາກ <code>products</code> (base_cost, base_price). ຫັກດ້ວຍຍອດຈາກ <code>stock_imports.total_cost</code> ແລະ <code>expenses.amount</code> ໃນຊ່ວງວັນທີທີ່ເລືອກ.</p>
+          <p>ໝາຍເຫດ: ຄຳນວນຈາກຕາຕະລາງ <code>orders</code> (status = 'ຈັດສົ່ງແລ້ວ'), <code>order_items</code>, ແລະຂໍ້ມູນລາຄາຈາກ <code>products</code> (base_cost, base_price). ຫັກດ້ວຍຍອດຈາກ <code>stock_imports.total_cost</code>, <code>expenses.amount</code>, ແລະ <code>salary_payments.amount</code> ໃນຊ່ວງວັນທີທີ່ເລືອກ.</p>
         </div>
       </div>
 
@@ -95,7 +91,7 @@ const from = ref(new Date(new Date().setDate(new Date().getDate() - 30)).toISOSt
 const to = ref(new Date().toISOString().slice(0,10))
 const loading = ref(false)
 const error = ref(null)
-const results = ref({ revenue: 0, cogs: 0, grossProfit: 0, stockImports: 0, expenses: 0, netProfit: 0, orderCount: 0, orderAmount: 0 })
+const results = ref({ revenue: 0, cogs: 0, grossProfit: 0, stockImports: 0, expenses: 0, salaryPayments: 0, netProfit: 0, orderCount: 0, orderAmount: 0 })
 const activeTab = ref('profit')
 const statusReport = ref([])
 
@@ -107,7 +103,7 @@ async function calculate() {
   try {
     loading.value = true
     error.value = null
-    results.value = { revenue: 0, cogs: 0, grossProfit: 0, stockImports: 0, expenses: 0, netProfit: 0 }
+    results.value = { revenue: 0, cogs: 0, grossProfit: 0, stockImports: 0, expenses: 0, salaryPayments: 0, netProfit: 0 }
 
     const fromISO = from.value + 'T00:00:00'
     const toISO = to.value + 'T23:59:59'
@@ -169,8 +165,18 @@ async function calculate() {
     if (expErr) throw expErr
     results.value.expenses = (exps || []).reduce((s, r) => s + Number(r.amount || 0), 0)
 
+    // 5) sum salary_payments.amount in date range
+    const { data: salaries, error: salErr } = await supabase
+      .from('salary_payments')
+      .select('amount')
+      .gte('payment_date', fromISO)
+      .lte('payment_date', toISO)
+
+    if (salErr) throw salErr
+    results.value.salaryPayments = (salaries || []).reduce((s, r) => s + Number(r.amount || 0), 0)
+
     // final net profit
-    results.value.netProfit = results.value.grossProfit - results.value.stockImports - results.value.expenses
+    results.value.netProfit = results.value.grossProfit - results.value.stockImports - results.value.expenses - results.value.salaryPayments
 
     // Also compute status report (lightweight client-side grouping for this date range)
     await calculateStatusReport(fromISO, toISO)
@@ -302,7 +308,7 @@ function netClass() {
 .report-table tbody tr td.amount { text-align: right; font-weight: 700; color: #111 }
 .report-table tbody tr td.amountsum { text-align: right; font-weight: 700; color: #05a53a }
 .report-table thead { display: none }
-..report-table tfoot { display: block; margin-top: 8px; border-top: 2px solid #f1f5f9 }
+.report-table tfoot { display: block; margin-top: 8px; border-top: 2px solid #f1f5f9 }
 .report-table tfoot tr.summary { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; gap: 16px }
 .report-table tfoot tr.summary th { font-size: 1.15rem; color: #05a53a; margin: 0 }
 .report-table tfoot tr.summary td { font-weight: 900; font-size: 1.15rem; text-align: right; margin: 0 }
@@ -336,7 +342,6 @@ function netClass() {
 .legend-item.status-cancelled::before { background: #ef4444 }
 .legend-item.status-info::before { background: #3b82f6 }
 .legend-item.status-design::before { background: #f59e0b }
-
 .loading { color: #666 }
 .error { color: #b00020 }
 .notes { margin-top: 12px; color: #666 }
