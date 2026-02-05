@@ -77,6 +77,18 @@
           </ul>
         </li>
       </ul>
+      
+      <!-- Logout Button -->
+      <div class="sidebar-footer">
+        <button class="logout-btn" @click="handleLogout">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          ອອກຈາກລະບົບ
+        </button>
+      </div>
     </nav>
     
     <!-- Overlay for mobile menu -->
@@ -90,6 +102,10 @@
 </template>
 
 <script setup>
+const supabase = useSupabaseClient()
+const router = useRouter()
+const user = useSupabaseUser()
+
 const menuOpen = ref(false)
 const reportsMenuOpen = ref(false)
 const salariesMenuOpen = ref(false)
@@ -108,6 +124,15 @@ function toggleReportsMenu() {
 
 function toggleSalariesMenu() {
   salariesMenuOpen.value = !salariesMenuOpen.value
+}
+
+async function handleLogout() {
+  try {
+    await supabase.auth.signOut()
+    router.push('/login')
+  } catch (error) {
+    console.error('Logout error:', error)
+  }
 }
 
 // Auto-open submenus if on corresponding pages
@@ -200,6 +225,10 @@ watch(() => route.path, (newPath) => {
   box-shadow: 2px 0 10px rgba(0,0,0,0.1);
   position: relative;
   z-index: 999;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .logo {
@@ -218,6 +247,7 @@ watch(() => route.path, (newPath) => {
   list-style: none;
   padding: 0;
   margin: 0;
+  flex: 1;
 }
 
 .menu li {
@@ -343,6 +373,45 @@ watch(() => route.path, (newPath) => {
   background: rgba(255,255,255,0.25);
   font-weight: 600;
   color: white;
+}
+
+/* Sidebar Footer with Logout Button */
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+
+.logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  color: white;
+  font-family: 'Phetsarath-OT', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.logout-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+}
+
+.logout-btn svg {
+  flex-shrink: 0;
 }
 
 .content {

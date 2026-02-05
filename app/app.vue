@@ -14,7 +14,9 @@
         <p><strong>Timestamp:</strong> {{ new Date().toISOString() }}</p>
       </div>
     </div>
-    <AppLayout>
+    
+    <!-- Show layout only when not on login page -->
+    <AppLayout v-if="!isLoginPage">
       <NuxtPage />
 
       <!-- Loading overlay shown until app finishes mounting to avoid SSR mismatch -->
@@ -24,14 +26,21 @@
         <p class="loading-step">{{ loadingStep }}</p>
       </div>
     </AppLayout>
+    
+    <!-- Login page without layout -->
+    <NuxtPage v-else />
   </div>
 </template>
 
 <script setup>
+const route = useRoute()
 const mounted = ref(false)
 const error = ref(null)
 const userAgent = ref('')
 const loadingStep = ref('Initializing...')
+
+// Check if current page is login
+const isLoginPage = computed(() => route.path === '/login')
 
 // Global error handler
 const captureError = (err, type = 'Error') => {

@@ -40,8 +40,7 @@
             <tr><th>ຍອດຂາຍ (ລາຄາຂາຍ)</th><td class="amount">{{ formatNumber(results.revenue) }} LAK</td></tr>
             <tr><th>ຕົ້ນທຶນຂາຍ (ຄ່າຕົ້ນທຶນ)</th><td class="amount">{{ formatNumber(results.cogs) }} LAK</td></tr>
             <tr><th>ກຳໄລຂັ້ນຕົ້ນ</th><td class="amount">{{ formatNumber(results.grossProfit) }} LAK</td></tr>
-            <tr><th>ຕົ້ນທຶນນຳເຂົ້າສີນຄ້າ (ລວມ ຈາກ stock_imports)</th><td class="amount">{{ formatNumber(results.stockImports) }} LAK</td></tr>
-            <tr><th>ຄ່າໃຊ້ຈ່າຍອື່ນໆ</th><td class="amount">{{ formatNumber(results.expenses) }} LAK</td></tr>
+            <tr><th>ຄ່າໃຊ້ຈ່າຍອື່ນໆ(ນຳເຂົ້າສິນຄ້າ...)</th><td class="amount">{{ formatNumber(results.expenses) }} LAK</td></tr>
             <tr><th>ຄ່າເງິນເດືອນພະນັກງານ</th><td class="amount">{{ formatNumber(results.salaryPayments) }} LAK</td></tr>
           </tbody>
           <tfoot>
@@ -84,6 +83,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  middleware: 'auth'
+})
+
 import { ref } from 'vue'
 const supabase = useSupabaseClient()
 
@@ -91,7 +94,7 @@ const from = ref(new Date(new Date().setDate(new Date().getDate() - 30)).toISOSt
 const to = ref(new Date().toISOString().slice(0,10))
 const loading = ref(false)
 const error = ref(null)
-const results = ref({ revenue: 0, cogs: 0, grossProfit: 0, stockImports: 0, expenses: 0, salaryPayments: 0, netProfit: 0, orderCount: 0, orderAmount: 0 })
+const results = ref({ revenue: 0, cogs: 0, grossProfit: 0, expenses: 0, salaryPayments: 0, netProfit: 0, orderCount: 0, orderAmount: 0 })
 const activeTab = ref('profit')
 const statusReport = ref([])
 
@@ -103,7 +106,7 @@ async function calculate() {
   try {
     loading.value = true
     error.value = null
-    results.value = { revenue: 0, cogs: 0, grossProfit: 0, stockImports: 0, expenses: 0, salaryPayments: 0, netProfit: 0 }
+    results.value = { revenue: 0, cogs: 0, grossProfit: 0, expenses: 0, salaryPayments: 0, netProfit: 0 }
 
     const fromISO = from.value + 'T00:00:00'
     const toISO = to.value + 'T23:59:59'
@@ -145,17 +148,7 @@ async function calculate() {
 
     results.value.grossProfit = results.value.revenue - results.value.cogs
 
-    // 3) sum stock_imports.total_cost in date range
-    const { data: imports, error: impErr } = await supabase
-      .from('stock_imports')
-      .select('total_cost')
-      .gte('import_date', fromISO)
-      .lte('import_date', toISO)
-
-    if (impErr) throw impErr
-    results.value.stockImports = (imports || []).reduce((s, r) => s + Number(r.total_cost || 0), 0)
-
-    // 4) sum expenses.amount in date range
+    // 3) sum expenses.amount in date range
     const { data: exps, error: expErr } = await supabase
       .from('expenses')
       .select('amount')
@@ -165,7 +158,7 @@ async function calculate() {
     if (expErr) throw expErr
     results.value.expenses = (exps || []).reduce((s, r) => s + Number(r.amount || 0), 0)
 
-    // 5) sum salary_payments.amount in date range
+    // 4) sum salary_payments.amount in date range
     const { data: salaries, error: salErr } = await supabase
       .from('salary_payments')
       .select('amount')
@@ -176,7 +169,7 @@ async function calculate() {
     results.value.salaryPayments = (salaries || []).reduce((s, r) => s + Number(r.amount || 0), 0)
 
     // final net profit
-    results.value.netProfit = results.value.grossProfit - results.value.stockImports - results.value.expenses - results.value.salaryPayments
+    results.value.netProfit = results.value.grossProfit  - results.value.expenses - results.value.salaryPayments
 
     // Also compute status report (lightweight client-side grouping for this date range)
     await calculateStatusReport(fromISO, toISO)
