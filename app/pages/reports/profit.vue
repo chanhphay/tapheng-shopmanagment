@@ -284,8 +284,18 @@ definePageMeta({
 import { ref } from 'vue'
 const supabase = useSupabaseClient()
 
-const from = ref(new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().slice(0,10))
-const to = ref(new Date().toISOString().slice(0,10))
+// iOS-compatible date formatting
+const getFormattedDate = (daysAgo = 0) => {
+  const date = new Date()
+  date.setDate(date.getDate() - daysAgo)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+const from = ref(getFormattedDate(30))
+const to = ref(getFormattedDate(0))
 const loading = ref(false)
 const error = ref(null)
 const results = ref({ revenue: 0, cogs: 0, grossProfit: 0, expenses: 0, salaryPayments: 0, netProfit: 0, orderCount: 0, orderAmount: 0 })

@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  compatibilityDate: '2026-01-24',
+  compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
   modules: ['@nuxtjs/supabase'],
   supabase: {
@@ -28,8 +28,13 @@ export default defineNuxtConfig({
   },
   nitro: {
     preset: 'cloudflare-pages',
+    compressPublicAssets: true,
   },
   vite: {
+    build: {
+      target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14'],
+      cssTarget: ['safari14'],
+    },
     optimizeDeps: {
       exclude: ['@supabase/supabase-js']
     }
