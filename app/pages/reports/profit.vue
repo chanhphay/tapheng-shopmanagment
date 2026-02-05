@@ -1082,51 +1082,406 @@ function netClass() {
 }
 
 /* Responsive Design */
+@media (max-width: 992px) {
+  .summary-cards {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .container {
-    padding: 16px;
+    padding: 12px;
+  }
+
+  .page-header {
+    margin-bottom: 20px;
+  }
+
+  .header-content {
+    gap: 16px;
   }
 
   .page-header h1 {
-    font-size: 24px;
+    font-size: 22px;
+  }
+
+  .subtitle {
+    font-size: 14px;
   }
 
   .header-icon {
-    width: 64px;
-    height: 64px;
-    font-size: 40px;
+    width: 60px;
+    height: 60px;
+    font-size: 36px;
+    border-radius: 16px;
+  }
+
+  .filters-card {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .tabs-inline {
+    margin-bottom: 20px;
+  }
+
+  .tab-btn {
+    padding: 12px 16px;
+    font-size: 14px;
   }
 
   .date-filters {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
-  .tabs-inline {
-    flex-direction: column;
+  .btn-calculate {
+    width: 100%;
+    justify-content: center;
   }
 
   .summary-cards {
     grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .summary-card {
+    padding: 20px;
+  }
+
+  .card-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 40px;
   }
 
   .card-value {
-    font-size: 24px;
+    font-size: 26px;
   }
 
-  .status-grid {
-    grid-template-columns: 1fr;
+  .card-label {
+    font-size: 13px;
+  }
+
+  .data-card {
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 18px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+  }
+
+  .detail-table td {
+    padding: 14px 12px;
   }
 
   .detail-table td.label {
     font-size: 14px;
+    width: 50%;
+  }
+
+  .label-icon {
+    font-size: 18px;
+    width: 28px;
   }
 
   .detail-table td.value {
-    font-size: 16px;
+    font-size: 15px;
+  }
+
+  .detail-table td.value.primary,
+  .detail-table td.value.success {
+    font-size: 17px;
+  }
+
+  .detail-table tfoot td {
+    padding: 16px 12px;
   }
 
   .detail-table tfoot td.value.total {
     font-size: 22px;
+  }
+
+  .status-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .status-card {
+    padding: 16px;
+  }
+
+  .status-amount {
+    font-size: 20px;
+  }
+
+  .status-legend {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .legend-item {
+    font-size: 13px;
+  }
+
+  .notes {
+    padding: 14px;
+  }
+
+  .notes p {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 8px;
+  }
+
+  .page-header h1 {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .header-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 32px;
+  }
+
+  .filters-card {
+    padding: 12px;
+  }
+
+  .tabs-inline {
+    padding: 6px;
+    gap: 8px;
+  }
+
+  .tab-btn {
+    padding: 10px 12px;
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  .tab-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .date-group label {
+    font-size: 13px;
+  }
+
+  .date-group input[type="date"] {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .btn-calculate {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+
+  .summary-card {
+    padding: 16px;
+    flex-direction: row;
+  }
+
+  .card-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 36px;
+  }
+
+  .card-label {
+    font-size: 12px;
+  }
+
+  .card-value {
+    font-size: 22px;
+  }
+
+  .card-sublabel {
+    font-size: 12px;
+  }
+
+  .data-card {
+    padding: 16px;
+  }
+
+  .card-title {
+    font-size: 16px;
+    flex-wrap: wrap;
+  }
+
+  .card-title svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Make table more compact on mobile */
+  .detail-table td {
+    padding: 12px 8px;
+  }
+
+  .detail-table td.label {
+    font-size: 13px;
+  }
+
+  .label-content {
+    gap: 8px;
+  }
+
+  .label-icon {
+    font-size: 16px;
+    width: 24px;
+  }
+
+  .detail-table td.value {
+    font-size: 14px;
+  }
+
+  .detail-table td.value.primary,
+  .detail-table td.value.success {
+    font-size: 16px;
+  }
+
+  .detail-table td.value.expense {
+    font-size: 13px;
+  }
+
+  .detail-table tfoot td {
+    padding: 14px 8px;
+    font-size: 15px;
+  }
+
+  .detail-table tfoot td.value.total {
+    font-size: 20px;
+  }
+
+  .status-card {
+    padding: 14px;
+  }
+
+  .status-header {
+    margin-bottom: 12px;
+  }
+
+  .status-name {
+    font-size: 14px;
+  }
+
+  .status-badge {
+    padding: 3px 10px;
+    font-size: 12px;
+  }
+
+  .status-amount {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .status-bar {
+    height: 6px;
+  }
+
+  .status-legend {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .legend-item {
+    font-size: 12px;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .notes {
+    padding: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .notes p {
+    font-size: 12px;
+  }
+
+  .error-message {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  .error-message svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .no-data {
+    padding: 40px 16px;
+  }
+
+  .no-data svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .no-data p {
+    font-size: 14px;
+  }
+}
+
+/* Extra small devices (very small phones) */
+@media (max-width: 360px) {
+  .page-header h1 {
+    font-size: 18px;
+  }
+
+  .header-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 28px;
+  }
+
+  .card-value {
+    font-size: 20px;
+  }
+
+  .detail-table td.label {
+    font-size: 12px;
+  }
+
+  .detail-table td.value {
+    font-size: 13px;
+  }
+
+  .detail-table tfoot td.value.total {
+    font-size: 18px;
+  }
+
+  .status-amount {
+    font-size: 16px;
+  }
+}
+
+/* Landscape orientation on mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .status-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 </style>
