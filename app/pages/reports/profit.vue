@@ -1,81 +1,275 @@
 <template>
   <div class="container">
-    <h1>ລາຍງານຜົນກຳໄລ</h1>
-    <div class="filters">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-icon">📊</div>
+        <div>
+          <h1>ລາຍງານຜົນກຳໄລ</h1>
+          <p class="subtitle">ວິເຄາະຜົນກຳໄລແລະຍອດຂາຍ</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="filters-card">
       <div class="tabs-inline">
-        <button :class="['tab-btn', { active: activeTab === 'profit' }]" @click="activeTab = 'profit'">📊 ຜົນກຳໄລ</button>
-        <button :class="['tab-btn', { active: activeTab === 'status' }]" @click="activeTab = 'status'">📑 ຍອດຕາມສະຖານະ</button>
-        <!-- <button class="tab-btn" @click="navigateTo('/stock-imports/stock')">📦 ສະຕ໋ອກສິນຄ້າ</button> -->
+        <button :class="['tab-btn', { active: activeTab === 'profit' }]" @click="activeTab = 'profit'">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="20" x2="12" y2="10"></line>
+            <line x1="18" y1="20" x2="18" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="16"></line>
+          </svg>
+          ຜົນກຳໄລ
+        </button>
+        <button :class="['tab-btn', { active: activeTab === 'status' }]" @click="activeTab = 'status'">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          ຍອດຕາມສະຖານະ
+        </button>
       </div>
 
-      <label>ຈາກວັນທີ:</label>
-      <input type="date" v-model="from" />
+      <div class="date-filters">
+        <div class="date-group">
+          <label>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            ຈາກວັນທີ
+          </label>
+          <input type="date" v-model="from" />
+        </div>
 
-      <div class="filter-controls">
-        <label>ຫາວັນທີ:</label>
-        <input type="date" v-model="to" />
-        <button class="btn-primary" @click="runReports" :disabled="loading">
-          <svg v-if="!loading" class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden>
-            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-            <path d="M8 7h8"></path>
-            <path d="M8 11h8"></path>
-            <path d="M8 15h8"></path>
+        <div class="date-group">
+          <label>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            ຫາວັນທີ
+          </label>
+          <input type="date" v-model="to" />
+        </div>
+
+        <button class="btn-calculate" @click="runReports" :disabled="loading">
+          <svg v-if="!loading" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
           </svg>
-          <svg v-else class="spinner" viewBox="0 0 50 50" width="16" height="16" aria-hidden>
+          <svg v-else class="spinner" viewBox="0 0 50 50" width="18" height="18">
             <circle cx="25" cy="25" r="20" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="31.4 31.4"></circle>
           </svg>
-          <span class="btn-label">ຄຳນວນ</span>
+          <span>{{ loading ? 'ກຳລັງຄຳນວນ...' : 'ຄຳນວນ' }}</span>
         </button>
       </div>
     </div>
-    <div v-if="loading" class="loading">ກຳລັງຄຳນວນ...</div>
-    <div v-if="error" class="error">{{ error }}</div>
+
+    <div v-if="error" class="error-message">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      {{ error }}
+    </div>
+
     <div v-if="!loading && !error" class="results">
       <!-- Profit results -->
-      <div v-if="activeTab === 'profit'">
-        <table class="report-table">
-          <tbody>
-            <tr><th>ຈຳນວນອໍເດີ (status = 'ຈັດສົ່ງແລ້ວ')</th><td class="amount">{{ results.orderCount }}</td></tr>
-            <tr><th>ຍອດລວມ (total_amount)</th><td class="amount">{{ formatNumber(results.orderAmount) }} LAK</td></tr>
-            <tr><th>ຍອດຂາຍ (ລາຄາຂາຍ)</th><td class="amount">{{ formatNumber(results.revenue) }} LAK</td></tr>
-            <tr><th>ຕົ້ນທຶນຂາຍ (ຄ່າຕົ້ນທຶນ)</th><td class="amount">{{ formatNumber(results.cogs) }} LAK</td></tr>
-            <tr><th>ກຳໄລຂັ້ນຕົ້ນ</th><td class="amount">{{ formatNumber(results.grossProfit) }} LAK</td></tr>
-            <tr><th>ຄ່າໃຊ້ຈ່າຍອື່ນໆ(ນຳເຂົ້າສິນຄ້າ...)</th><td class="amount">{{ formatNumber(results.expenses) }} LAK</td></tr>
-            <tr><th>ຄ່າເງິນເດືອນພະນັກງານ</th><td class="amount">{{ formatNumber(results.salaryPayments) }} LAK</td></tr>
-          </tbody>
-          <tfoot>
-            <tr class="summary" :class="netClass()"><th>ກຳໄລສຸດທິ</th>   <td class="amountsum">{{ formatNumber(results.netProfit) }} LAK</td></tr>
-          </tfoot>
-        </table>
+      <div v-if="activeTab === 'profit'" class="profit-section">
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+          <div class="summary-card orders">
+            <div class="card-icon">📦</div>
+            <div class="card-content">
+              <div class="card-label">ຈຳນວນອໍເດີ</div>
+              <div class="card-value">{{ results.orderCount }}</div>
+              <div class="card-sublabel">ອໍເດີທີ່ຈັດສົ່ງແລ້ວ</div>
+            </div>
+          </div>
 
-        <div class="notes">
-          <p>ໝາຍເຫດ: ຄຳນວນຈາກຕາຕະລາງ <code>orders</code> (status = 'ຈັດສົ່ງແລ້ວ'), <code>order_items</code>, ແລະຂໍ້ມູນລາຄາຈາກ <code>products</code> (base_cost, base_price). ຫັກດ້ວຍຍອດຈາກ <code>stock_imports.total_cost</code>, <code>expenses.amount</code>, ແລະ <code>salary_payments.amount</code> ໃນຊ່ວງວັນທີທີ່ເລືອກ.</p>
+          <div class="summary-card revenue">
+            <div class="card-icon">💰</div>
+            <div class="card-content">
+              <div class="card-label">ຍອດຂາຍ</div>
+              <div class="card-value">{{ formatNumber(results.revenue) }}</div>
+              <div class="card-sublabel">LAK</div>
+            </div>
+          </div>
+
+          <div class="summary-card profit" :class="netClass()">
+            <div class="card-icon">{{ results.netProfit >= 0 ? '📈' : '📉' }}</div>
+            <div class="card-content">
+              <div class="card-label">ກຳໄລສຸດທິ</div>
+              <div class="card-value">{{ formatNumber(results.netProfit) }}</div>
+              <div class="card-sublabel">LAK</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detailed Table -->
+        <div class="data-card">
+          <h3 class="card-title">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            ລາຍລະອຽດຜົນກຳໄລ
+          </h3>
+          
+          <div class="table-wrapper">
+            <table class="detail-table">
+              <tbody>
+                <tr>
+                  <td class="label">
+                    <div class="label-content">
+                      <span class="label-icon">📊</span>
+                      <span>ຈຳນວນອໍເດີທີ່ຈັດສົ່ງແລ້ວ</span>
+                    </div>
+                  </td>
+                  <td class="value">{{ results.orderCount }} ອໍເດີ</td>
+                </tr>
+                <tr>
+                  <td class="label">
+                    <div class="label-content">
+                      <span class="label-icon">💵</span>
+                      <span>ຍອດລວມທັງໝົດ (Total Amount)</span>
+                    </div>
+                  </td>
+                  <td class="value">{{ formatNumber(results.orderAmount) }} LAK</td>
+                </tr>
+                <tr class="highlight">
+                  <td class="label">
+                    <div class="label-content">
+                      <span class="label-icon">💰</span>
+                      <span>ຍອດຂາຍ (Revenue)</span>
+                    </div>
+                  </td>
+                  <td class="value primary">{{ formatNumber(results.revenue) }} LAK</td>
+                </tr>
+                <tr>
+                  <td class="label">
+                    <div class="label-content">
+                      <span class="label-icon">📦</span>
+                      <span>ຕົ້ນທຶນຂາຍ (COGS)</span>
+                    </div>
+                  </td>
+                  <td class="value">{{ formatNumber(results.cogs) }} LAK</td>
+                </tr>
+                <tr class="separator">
+                  <td class="label">
+                    <div class="label-content">
+                      <span class="label-icon">📈</span>
+                      <span>ກຳໄລຂັ້ນຕົ້ນ (Gross Profit)</span>
+                    </div>
+                  </td>
+                  <td class="value success">{{ formatNumber(results.grossProfit) }} LAK</td>
+                </tr>
+                <tr>
+                  <td class="label">
+                    <div class="label-content">
+                      <span class="label-icon">💸</span>
+                      <span>ຄ່າໃຊ້ຈ່າຍອື່ນໆ (Expenses)</span>
+                    </div>
+                  </td>
+                  <td class="value expense">-{{ formatNumber(results.expenses) }} LAK</td>
+                </tr>
+                <tr>
+                  <td class="label">
+                    <div class="label-content">
+                      <span class="label-icon">👥</span>
+                      <span>ຄ່າເງິນເດືອນພະນັກງານ (Salaries)</span>
+                    </div>
+                  </td>
+                  <td class="value expense">-{{ formatNumber(results.salaryPayments) }} LAK</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="total-row" :class="netClass()">
+                  <td class="label">
+                    <div class="label-content">
+                      <span class="label-icon">{{ results.netProfit >= 0 ? '✅' : '❌' }}</span>
+                      <span>ກຳໄລສຸດທິ (Net Profit)</span>
+                    </div>
+                  </td>
+                  <td class="value total">{{ formatNumber(results.netProfit) }} LAK</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="notes">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <p>ຄຳນວນຈາກອໍເດີທີ່ຈັດສົ່ງແລ້ວ, ລາຄາຕົ້ນທຶນ ແລະລາຄາຂາຍຈາກຂໍ້ມູນສິນຄ້າ, ຫັກດ້ວຍຄ່າໃຊ້ຈ່າຍແລະເງິນເດືອນໃນຊ່ວງເວລາທີ່ເລືອກ</p>
+          </div>
         </div>
       </div>
 
       <!-- Status grouping results -->
-      <div v-if="activeTab === 'status'">
-        <h2>ລາຍງານອໍເດີ</h2>
-        <div class="status-legend">
-          <span class="legend-item status-delivered"><i></i> ຈັດສົ່ງແລ້ວ</span>
-          <span class="legend-item status-cancelled"><i></i> ຍົກເລີກ</span>
-          <span class="legend-item status-info"><i></i> ແຈ້ງລູກຄ້າ / ສັ່ງພີມ</span>
-          <span class="legend-item status-design"><i></i> ອອກແບບ</span>
-        </div>
-        <div v-if="statusReport.length === 0" class="no-data">ຍັງບໍ່ມີບັນທຶກທີ່ແກ້ລະວັນທີນີ້</div>
-        <div v-else class="table-container">
-          <table class="report-table status">
-            <thead>
-              <tr><th>ສະຖານະ</th><th>ຈຳນວນ</th><th class="amount">ລວມ (LAK)</th></tr>
-            </thead>
-            <tbody>
-              <tr v-for="row in statusReport" :key="row.status" :class="statusClass(row.status)">
-                <td class="status-cell">{{ row.status }}</td>
-                <td>{{ row.count }}</td>
-                <td class="amount">{{ formatNumber(row.amount) }}</td>
-              </tr>
-            </tbody>
-          </table>
+      <div v-if="activeTab === 'status'" class="status-section">
+        <div class="data-card">
+          <h3 class="card-title">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            ລາຍງານອໍເດີຕາມສະຖານະ
+          </h3>
+          
+          <div class="status-legend">
+            <div class="legend-item">
+              <span class="legend-dot delivered"></span>
+              <span>ຈັດສົ່ງແລ້ວ</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot cancelled"></span>
+              <span>ຍົກເລີກ</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot info"></span>
+              <span>ແຈ້ງລູກຄ້າ / ສັ່ງພີມ</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot design"></span>
+              <span>ອອກແບບ</span>
+            </div>
+          </div>
+
+          <div v-if="statusReport.length === 0" class="no-data">
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <p>ຍັງບໍ່ມີບັນທຶກໃນຊ່ວງເວລານີ້</p>
+          </div>
+          
+          <div v-else class="status-grid">
+            <div v-for="row in statusReport" :key="row.status" class="status-card" :class="statusClass(row.status)">
+              <div class="status-header">
+                <span class="status-name">{{ row.status }}</span>
+                <span class="status-badge">{{ row.count }}</span>
+              </div>
+              <div class="status-amount">{{ formatNumber(row.amount) }} LAK</div>
+              <div class="status-bar">
+                <div class="status-fill" :style="{ width: getPercentage(row.amount) + '%' }"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -100,6 +294,11 @@ const statusReport = ref([])
 
 function formatNumber(value) {
   return new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)
+}
+
+function getPercentage(amount) {
+  const total = statusReport.value.reduce((sum, item) => sum + item.amount, 0)
+  return total > 0 ? (amount / total * 100).toFixed(1) : 0
 }
 
 async function calculate() {
@@ -230,134 +429,704 @@ function netClass() {
 </script>
 
 <style scoped>
-.container { max-width: 1100px; margin: 0 auto; padding: 20px }
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  min-height: 100vh;
+}
 
-/* Tabs and filters */
-.filters { display: flex; gap: 16px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; justify-content: space-between }
-.tabs-inline { display: flex; gap: 8px; align-items: center; background: rgba(102,126,234,0.06); padding: 8px; border-radius: 12px }
+/* Page Header */
+.page-header {
+  margin-bottom: 32px;
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-icon {
+  font-size: 56px;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  margin: 4px 0 0 0;
+  font-size: 16px;
+  color: #718096;
+  font-weight: 500;
+}
+
+/* Filters Card */
+.filters-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.5s ease-out 0.1s both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tabs-inline {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 8px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+  border-radius: 16px;
+}
+
 .tab-btn {
+  flex: 1;
   background: transparent;
   border: none;
-  padding: 10px 14px;
-  border-radius: 10px;
+  padding: 14px 20px;
+  border-radius: 12px;
   cursor: pointer;
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   font-weight: 700;
-  color: #273444;
-  transition: all 0.18s ease;
-  box-shadow: none;
+  font-size: 15px;
+  color: #475569;
+  transition: all 0.3s ease;
 }
-.tab-btn:hover { transform: translateY(-3px); }
-.tab-btn:focus { outline: 3px solid rgba(102,126,234,0.18); }
+
+.tab-btn svg {
+  transition: transform 0.3s ease;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.6);
+  transform: translateY(-2px);
+}
+
+.tab-btn:hover svg {
+  transform: scale(1.1);
+}
+
 .tab-btn.active {
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.18);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
 }
 
-/* Right-side controls */
-.filter-controls { display: flex; gap: 10px; align-items: center }
-.filter-controls label { font-size: 0.95rem; margin-right: 6px }
-.filter-controls input[type="date"] { padding: 8px; border: 1px solid #e6e9ef; border-radius: 8px }
+.date-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 16px;
+  align-items: end;
+}
 
-/* Primary button styles (modern, gradient) */
-.btn-primary {
-  display: inline-flex;
+.date-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.date-group label {
+  display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
-  border-radius: 12px;
-  border: none;
-  color: #fff;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 8px 24px rgba(102,126,234,0.18);
-  cursor: pointer;
+  font-size: 14px;
   font-weight: 700;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  color: #334155;
 }
 
-.btn-primary:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(102,126,234,0.22); }
-.btn-primary:active:not(:disabled) { transform: translateY(-1px); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none }
+.date-group label svg {
+  color: #667eea;
+}
 
-.btn-icon { width: 16px; height: 16px; color: rgba(255,255,255,0.95); }
-.spinner { width: 16px; height: 16px; color: rgba(255,255,255,0.95); animation: spin 1s linear infinite }
+.date-group input[type="date"] {
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.date-group input[type="date"]:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.btn-calculate {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);
+  min-height: 48px;
+}
+
+.btn-calculate:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.35);
+}
+
+.btn-calculate:active:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn-calculate:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
 
 @keyframes spin {
-  0% { transform: rotate(0deg) }
-  100% { transform: rotate(360deg) }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-/* Table container: enable horizontal scroll on small screens */
-.table-container { overflow-x: auto; -webkit-overflow-scrolling: touch }
-
-/* Profit table (two-column summary) — make rows compact and readable on mobile */
-.report-table { width: 100%; border-collapse: collapse; margin-top: 8px }
-.report-table tbody { display: block }
-.report-table tbody tr { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f1f5f9; align-items: center }
-.report-table tbody tr th, .report-table tbody tr td { padding: 0; margin: 0 }
-.report-table tbody tr td.amount { text-align: right; font-weight: 700; color: #111 }
-.report-table tbody tr td.amountsum { text-align: right; font-weight: 700; color: #05a53a }
-.report-table thead { display: none }
-.report-table tfoot { display: block; margin-top: 8px; border-top: 2px solid #f1f5f9 }
-.report-table tfoot tr.summary { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; gap: 16px }
-.report-table tfoot tr.summary th { font-size: 1.15rem; color: #05a53a; margin: 0 }
-.report-table tfoot tr.summary td { font-weight: 900; font-size: 1.15rem; text-align: right; margin: 0 }
-.report-table tfoot tr.summary td.amountsum { padding-left: 16px }
-
-/* Status table: keep a normal table but allow scroll on small screens */
-.report-table.status { min-width: 640px }
-
-/* Status highlight classes */
-.status-delivered td { background: linear-gradient(90deg, rgba(34,197,94,0.06), rgba(34,197,94,0.03)) }
-.status-delivered td.amount { color: #166534; font-weight: 800 }
-.status-delivered td.status-cell::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #16a34a; margin-right: 10px; vertical-align: middle }
-
-.status-cancelled td { background: linear-gradient(90deg, rgba(239,68,68,0.06), rgba(239,68,68,0.03)) }
-.status-cancelled td.amount { color: #991b1b; font-weight: 800 }
-.status-cancelled td.status-cell::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #ef4444; margin-right: 10px; vertical-align: middle }
-
-.status-info td { background: linear-gradient(90deg, rgba(59,130,246,0.06), rgba(59,130,246,0.03)) }
-.status-info td.amount { color: #1e3a8a; font-weight: 800 }
-.status-info td.status-cell::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #3b82f6; margin-right: 10px; vertical-align: middle }
-
-.status-design td { background: linear-gradient(90deg, rgba(250,204,21,0.06), rgba(250,204,21,0.03)) }
-.status-design td.amount { color: #92400e; font-weight: 800 }
-.status-design td.status-cell::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; margin-right: 10px; vertical-align: middle }
-
-/* Legend styles */
-.status-legend { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; flex-wrap: wrap }
-.legend-item { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 8px; font-weight: 600; color: #222 }
-.legend-item::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px }
-.legend-item.status-delivered::before { background: #16a34a }
-.legend-item.status-cancelled::before { background: #ef4444 }
-.legend-item.status-info::before { background: #3b82f6 }
-.legend-item.status-design::before { background: #f59e0b }
-.loading { color: #666 }
-.error { color: #b00020 }
-.notes { margin-top: 12px; color: #666 }
-
-/* Responsive adjustments for small screens */
-@media (max-width: 800px) {
-  .filters { flex-direction: column; align-items: stretch; gap: 12px }
-  .filter-controls { justify-content: space-between; gap: 8px }
-  .tabs-inline { width: 100% }
-  .filter-controls input[type="date"] { width: 100% }
-  .btn-primary { width: 100%; justify-content: center }
-}
-@media (max-width: 480px) {
-  h1 { font-size: 1.15rem }
-  .tab-btn { padding: 8px 10px; font-size: 0.95rem }
-  .filter-controls input[type="date"] { padding: 6px }
-  .report-table tbody tr { grid-template-columns: 1fr auto }
-  .report-table.status { width: 100%; overflow-x: auto }
+/* Error Message */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 16px;
+  color: #b91c1c;
+  font-weight: 600;
+  margin-bottom: 24px;
+  animation: shake 0.5s ease-out;
 }
 
-/* Summary profit coloring */
-.profit-positive th, .profit-positive td.amountsum { color: #16a34a; }
-.profit-positive td.amountsum { font-weight: 900 }
-.profit-negative th, .profit-negative td.amountsum { color: #b91c1c; }
-.profit-negative td.amountsum { font-weight: 900 }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* Results Section */
+.results {
+  animation: fadeIn 0.5s ease-out 0.2s both;
+}
+
+/* Summary Cards */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.summary-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.card-icon {
+  font-size: 48px;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  flex-shrink: 0;
+}
+
+.summary-card.orders .card-icon {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%);
+}
+
+.summary-card.revenue .card-icon {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.1) 100%);
+}
+
+.summary-card.profit .card-icon {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(126, 34, 206, 0.1) 100%);
+}
+
+.summary-card.profit.profit-negative .card-icon {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.summary-card.profit.profit-positive .card-value {
+  color: #16a34a;
+}
+
+.summary-card.profit.profit-negative .card-value {
+  color: #dc2626;
+}
+
+.card-sublabel {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+/* Data Card */
+.data-card {
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 24px 0;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.card-title svg {
+  color: #667eea;
+}
+
+/* Detail Table */
+.table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.detail-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.detail-table tbody tr:hover {
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.03) 0%, rgba(118, 75, 162, 0.03) 100%);
+}
+
+.detail-table tbody tr.highlight {
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.06) 0%, rgba(118, 75, 162, 0.06) 100%);
+}
+
+.detail-table tbody tr.separator {
+  border-top: 2px solid #e2e8f0;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.detail-table td {
+  padding: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.detail-table td.label {
+  font-weight: 600;
+  color: #475569;
+  width: 60%;
+}
+
+.label-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.label-icon {
+  font-size: 20px;
+  width: 32px;
+  text-align: center;
+}
+
+.detail-table td.value {
+  text-align: right;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  font-family: 'Courier New', monospace;
+}
+
+.detail-table td.value.primary {
+  color: #667eea;
+  font-size: 20px;
+}
+
+.detail-table td.value.success {
+  color: #16a34a;
+  font-size: 20px;
+}
+
+.detail-table td.value.expense {
+  color: #ef4444;
+}
+
+.detail-table tfoot tr.total-row {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+}
+
+.detail-table tfoot td {
+  padding: 20px 16px;
+  border: none;
+  font-size: 18px;
+}
+
+.detail-table tfoot td.value.total {
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.detail-table tfoot.profit-positive tr.total-row {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.1) 100%);
+}
+
+.detail-table tfoot.profit-positive td.value.total {
+  color: #16a34a;
+}
+
+.detail-table tfoot.profit-negative tr.total-row {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+}
+
+.detail-table tfoot.profit-negative td.value.total {
+  color: #dc2626;
+}
+
+/* Notes */
+.notes {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.06) 0%, rgba(37, 99, 235, 0.06) 100%);
+  border-radius: 12px;
+  border-left: 4px solid #3b82f6;
+}
+
+.notes svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #3b82f6;
+}
+
+.notes p {
+  margin: 0;
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+/* Status Section */
+.status-legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legend-dot.delivered {
+  background: #16a34a;
+}
+
+.legend-dot.cancelled {
+  background: #dc2626;
+}
+
+.legend-dot.info {
+  background: #3b82f6;
+}
+
+.legend-dot.design {
+  background: #f59e0b;
+}
+
+/* No Data */
+.no-data {
+  text-align: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+}
+
+.no-data svg {
+  color: #cbd5e1;
+  margin-bottom: 16px;
+}
+
+.no-data p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Status Grid */
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.status-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  border: 2px solid #f1f5f9;
+  transition: all 0.3s ease;
+}
+
+.status-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.status-card.status-delivered {
+  border-color: rgba(34, 197, 94, 0.3);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.03) 0%, rgba(22, 163, 74, 0.03) 100%);
+}
+
+.status-card.status-cancelled {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.03) 0%, rgba(220, 38, 38, 0.03) 100%);
+}
+
+.status-card.status-info {
+  border-color: rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, rgba(37, 99, 235, 0.03) 100%);
+}
+
+.status-card.status-design {
+  border-color: rgba(245, 158, 11, 0.3);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.03) 0%, rgba(217, 119, 6, 0.03) 100%);
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.status-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.status-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.status-amount {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 12px;
+  font-family: 'Courier New', monospace;
+}
+
+.status-bar {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.status-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.5s ease-out;
+  border-radius: 4px;
+}
+
+.status-card.status-delivered .status-fill {
+  background: linear-gradient(90deg, #16a34a 0%, #22c55e 100%);
+}
+
+.status-card.status-cancelled .status-fill {
+  background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%);
+}
+
+.status-card.status-info .status-fill {
+  background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
+}
+
+.status-card.status-design .status-fill {
+  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+  }
+
+  .header-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 40px;
+  }
+
+  .date-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .tabs-inline {
+    flex-direction: column;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .card-value {
+    font-size: 24px;
+  }
+
+  .status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-table td.label {
+    font-size: 14px;
+  }
+
+  .detail-table td.value {
+    font-size: 16px;
+  }
+
+  .detail-table tfoot td.value.total {
+    font-size: 22px;
+  }
+}
 </style>
