@@ -14,3 +14,66 @@
   font-style: normal;
   font-display: swap;
 } */
+
+/* iOS Specific Fixes */
+* {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-touch-callout: none;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  /* Prevent bounce scrolling on iOS */
+  overscroll-behavior-y: none;
+}
+
+/* Fix for iOS Safari input zoom */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+select,
+textarea {
+  font-size: 16px !important;
+}
+
+/* iOS Safe Area Support */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Fix for iOS momentum scrolling */
+.container,
+.scrollable {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Fix button appearance on iOS */
+button,
+input[type="button"],
+input[type="submit"] {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+
+/* Prevent iOS from styling buttons */
+button {
+  cursor: pointer;
+}
+
+/* Fix flexbox issues on iOS */
+* {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}

@@ -429,27 +429,39 @@ function netClass() {
 </script>
 
 <style scoped>
+/* iOS Compatibility */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
   min-height: 100vh;
+  /* iOS safe area support */
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
 
 /* Page Header */
 .page-header {
   margin-bottom: 32px;
   animation: slideDown 0.5s ease-out;
+  /* iOS transform fix */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
     transform: translateY(-20px);
+    -webkit-transform: translateY(-20px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+    -webkit-transform: translateY(0);
   }
 }
 
@@ -475,9 +487,11 @@ function netClass() {
 @keyframes pulse {
   0%, 100% {
     transform: scale(1);
+    -webkit-transform: scale(1);
   }
   50% {
     transform: scale(1.05);
+    -webkit-transform: scale(1.05);
   }
 }
 
@@ -489,6 +503,9 @@ function netClass() {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  /* iOS gradient text fix */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 .subtitle {
@@ -543,19 +560,26 @@ function netClass() {
   font-size: 15px;
   color: #475569;
   transition: all 0.3s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 48px; /* iOS touch target */
 }
 
 .tab-btn svg {
   transition: transform 0.3s ease;
+  -webkit-transition: transform 0.3s ease;
 }
 
 .tab-btn:hover {
   background: rgba(255, 255, 255, 0.6);
   transform: translateY(-2px);
+  -webkit-transform: translateY(-2px);
 }
 
 .tab-btn:hover svg {
   transform: scale(1.1);
+  -webkit-transform: scale(1.1);
 }
 
 .tab-btn.active {
@@ -594,15 +618,19 @@ function netClass() {
   padding: 12px 16px;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 16px; /* Prevent iOS zoom on focus */
   transition: all 0.2s ease;
   background: white;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .date-group input[type="date"]:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  /* Prevent iOS from adding default styling */
+  -webkit-tap-highlight-color: transparent;
 }
 
 .btn-calculate {
@@ -619,16 +647,23 @@ function netClass() {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);
-  min-height: 48px;
+  min-height: 48px; /* iOS touch target size */
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .btn-calculate:hover:not(:disabled) {
   transform: translateY(-3px);
+  -webkit-transform: translateY(-3px);
   box-shadow: 0 12px 32px rgba(102, 126, 234, 0.35);
 }
 
 .btn-calculate:active:not(:disabled) {
   transform: translateY(-1px);
+  -webkit-transform: translateY(-1px);
 }
 
 .btn-calculate:disabled {
