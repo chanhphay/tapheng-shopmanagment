@@ -570,21 +570,8 @@ async function cancelOrder() {
     try {
         loading.value = true;
         error.value = null;
-        // Return all item quantities to stock
-        for (const item of items.value) {
-            const { data: variantData, error: fetchError } = await supabase
-                .from('product_variants')
-                .select('stock_qty')
-                .eq('id', item.variant_id)
-                .single();
-            if (fetchError) throw fetchError;
-            const newStock = (variantData?.stock_qty || 0) + item.quantity;
-            const { error: updateError } = await supabase
-                .from('product_variants')
-                .update({ stock_qty: newStock })
-                .eq('id', item.variant_id);
-            if (updateError) throw updateError;
-        }
+        // ການຄືນສະຕ໋ອກຈະຖືກຈັດການໂດຍ Trigger ໃນ Database ເມື່ອຍົກເລີກອໍເດີ
+        // ຕ້ອງສ້າງ trigger ສຳລັບ DELETE: tr_return_stock_on_delete
         // Update order status
         const { error: orderError } = await supabase
             .from('orders')
@@ -1089,21 +1076,8 @@ async function addProductToOrder() {
 
         if (insertError) throw insertError
 
-        // Update stock
-        const { data: variantData } = await supabase
-            .from('product_variants')
-            .select('stock_qty')
-            .eq('id', newItem.value.variant_id)
-            .single()
-
-        const newStock = variantData.stock_qty - newItem.value.quantity
-
-        const { error: stockError } = await supabase
-            .from('product_variants')
-            .update({ stock_qty: newStock })
-            .eq('id', newItem.value.variant_id)
-
-        if (stockError) throw stockError
+        // ບໍ່ຕ້ອງຫັກສະຕ໋ອກດ້ວຍມືແລ້ວ ເພາະມີ Trigger ໃນ Database ເຮັດໃຫ້ແລ້ວ
+        // ໃນ supabase-schema.sql: tr_subtract_stock_on_sale
 
         // Update order total
         const newTotal = order.value.total_amount + (newItem.value.quantity * newItem.value.unit_price)
@@ -1152,23 +1126,8 @@ async function deleteOrderItem(item) {
 
         if (deleteError) throw deleteError
 
-        // Return quantity to stock
-        const { data: variantData } = await supabase
-            .from('product_variants')
-            .select('stock_qty')
-            .eq('id', item.variant_id)
-            .single()
-
-        if (variantData) {
-            const newStock = variantData.stock_qty + item.quantity
-
-            const { error: stockError } = await supabase
-                .from('product_variants')
-                .update({ stock_qty: newStock })
-                .eq('id', item.variant_id)
-
-            if (stockError) throw stockError
-        }
+        // ການຄືນສະຕ໋ອກຈະຖືກຈັດການໂດຍ Trigger ໃນ Database ເມື່ອລຶບ order_item
+        // ຕ້ອງສ້າງ trigger ສຳລັບ DELETE: tr_return_stock_on_delete
 
         // Update order total
         const itemTotal = item.quantity * item.price

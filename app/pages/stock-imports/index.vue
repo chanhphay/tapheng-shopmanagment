@@ -304,6 +304,14 @@ async function saveImport() {
       }
     }
     
+    // ກວດສອບວ່າມີສິນຄ້າຊ້ຳບໍ່
+    const variantIds = form.value.items.map(item => item.variant_id)
+    const uniqueVariantIds = new Set(variantIds)
+    if (variantIds.length !== uniqueVariantIds.size) {
+      error.value = 'ມີສິນຄ້າຊ້ຳກັນໃນລາຍການ! ກະລຸນາລຶບອັນທີ່ຊ້ຳອອກ ຫຼື ລວມຈຳນວນເຂົ້າກັນ'
+      return
+    }
+    
     // ບັນທຶກການນຳເຂົ້າ
     const { data: importData, error: importError } = await supabase
       .from('stock_imports')
@@ -346,23 +354,8 @@ async function saveImport() {
     
     if (itemsError) throw itemsError
     
-    // ເພີ່ມສະຕ໋ອກ
-    for (const item of form.value.items) {
-      const { data: variantData } = await supabase
-        .from('product_variants')
-        .select('stock_qty')
-        .eq('id', item.variant_id)
-        .single()
-      
-      const newStock = variantData.stock_qty + item.quantity_added
-      
-      const { error: stockError } = await supabase
-        .from('product_variants')
-        .update({ stock_qty: newStock })
-        .eq('id', item.variant_id)
-      
-      if (stockError) throw stockError
-    }
+    // ບໍ່ຕ້ອງເພີ່ມສະຕ໋ອກດ້ວຍມືແລ້ວ ເພາະມີ Trigger ໃນ Database ເຮັດໃຫ້ແລ້ວ
+    // ໃນ supabase-schema.sql: tr_update_stock_on_import
     
     resetForm()
     await fetchImports()
@@ -415,13 +408,18 @@ function handleVariantChange(index) {
       }
     }
     
-    alert(`ສິນຄ້ານີ້ຖືກເລືອກແລ້ວໃນລາຍການທີ່ ${duplicateIndex + 1}\n${productName}`)
+    error.value = `⚠️ ສິນຄ້ານີ້ຖືກເລືອກແລ້ວໃນລາຍການທີ່ ${duplicateIndex + 1}: ${productName}\nກະລຸນາລຶບອັນທີ່ຊ້ຳອອກ ຫຼື ລວມຈຳນວນເຂົ້າກັນ`
     
     // ລ້າງການເລືອກ
-    item.variant_id = ''
-    item.cost_per_unit = 0
+    setTimeout(() => {
+      item.variant_id = ''
+      item.cost_per_unit = 0
+    }, 100)
     return
   }
+  
+  // ລ້າງຂໍ້ຄວາມ error
+  error.value = null
   
   // ອັບເດດຕົ້ນທືນ
   updateItemCost(index)

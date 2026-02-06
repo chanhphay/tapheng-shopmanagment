@@ -715,23 +715,8 @@ async function saveOrder() {
     
     if (itemsError) throw itemsError
     
-    // ลดสต็อก
-    for (const item of form.value.items) {
-      const { data: variantData } = await supabase
-        .from('product_variants')
-        .select('stock_qty')
-        .eq('id', item.variant_id)
-        .single()
-      
-      const newStock = variantData.stock_qty - item.quantity
-      
-      const { error: stockError } = await supabase
-        .from('product_variants')
-        .update({ stock_qty: newStock })
-        .eq('id', item.variant_id)
-      
-      if (stockError) throw stockError
-    }
+    // ບໍ່ຕ້ອງຫັກສະຕ໋ອກດ້ວຍມືແລ້ວ ເພາະມີ Trigger ໃນ Database ເຮັດໃຫ້ແລ້ວ
+    // ໃນ supabase-schema.sql: tr_subtract_stock_on_sale
     
     resetForm()
     await fetchOrders()
